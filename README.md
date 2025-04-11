@@ -5,7 +5,7 @@
 > Professor doutor Paulo Eduardo Sobreira Moraes
 
 - Adriano Montaguti - GRR20193927
-- Gabriel Felipe Batista dos Santos - 
+- Gabriel Felipe Batista dos Santos - GRR20221101
 - Gabriel - 
 - Gustavo Jahnz -
 - Gustavo Nielse -
