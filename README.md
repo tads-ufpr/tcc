@@ -1,17 +1,18 @@
 # Trabalho de conclusão de curso - TADS UFPR
 
-## Equipe 
+## Equipe
 
 > Professor doutor Paulo Eduardo Sobreira Moraes
 
 - Adriano Montaguti - GRR20193927
 - Gabriel Felipe Batista dos Santos - GRR20221101
-- Gabriel - 
+- Gabriel -
 - Gustavo Jahnz -
 - Gustavo Nielse -
 
+## Documentos
 
-## Documentos 
+- [TCC_DOC](https://docs.google.com/document/d/1hI1P33kN8PQpUqZXVXgmHHdk__0BxUkZfuWuYuPEskA/edit?tab=t.0)
 
 - [Levantamento de Requisitos](https://docs.google.com/document/d/1k5vkuFzUfYggxJSTPF3Jj1cu1srn4qLhsnR0v7_5WYs/edit?tab=t.0)
 
@@ -19,5 +20,6 @@
 
 - [Problema](https://docs.google.com/document/d/1_c5OaRJXu8zVjyejEKi6FajjZZgeWCb7shegYzOctrg/edit?usp=drivesdk)
 
-### Links 
+### Links
+
 - [Astah Software](https://astah.net/downloads/)
