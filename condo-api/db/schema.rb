@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_28_162804) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_28_195303) do
   create_table "condominia", force: :cascade do |t|
     t.string "name"
-    t.string "zip_code"
+    t.string "zipcode"
     t.string "address"
-    t.string "district"
+    t.string "neighborhood"
     t.string "city"
     t.string "state"
     t.string "number"
