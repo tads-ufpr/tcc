@@ -1,0 +1,2 @@
+class Condominium < ApplicationRecord
+end

@@ -1,0 +1,51 @@
+class CondominiaController < ApplicationController
+  before_action :set_condominium, only: %i[ show update destroy ]
+
+  # GET /condominia
+  def index
+    @condominia = Condominium.all
+
+    render json: @condominia
+  end
+
+  # GET /condominia/1
+  def show
+    render json: @condominium
+  end
+
+  # POST /condominia
+  def create
+    @condominium = Condominium.new(condominium_params)
+
+    if @condominium.save
+      render json: @condominium, status: :created, location: @condominium
+    else
+      render json: @condominium.errors, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT /condominia/1
+  def update
+    if @condominium.update(condominium_params)
+      render json: @condominium
+    else
+      render json: @condominium.errors, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE /condominia/1
+  def destroy
+    @condominium.destroy!
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_condominium
+      @condominium = Condominium.find(params.expect(:id))
+    end
+
+    # Only allow a list of trusted parameters through.
+    def condominium_params
+      params.expect(condominium: [ :name, :zip_code, :address, :district, :city, :state, :number ])
+    end
+end
