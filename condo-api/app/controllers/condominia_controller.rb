@@ -39,13 +39,16 @@ class CondominiaController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_condominium
-      @condominium = Condominium.find(params.expect(:id))
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_condominium
+    @condominium = Condominium.find(params.expect(:id))
+  end
 
-    # Only allow a list of trusted parameters through.
-    def condominium_params
-      params.expect(condominium: [ :name, :zip_code, :address, :district, :city, :state, :number ])
-    end
+  def condominium_params
+    params.require(:condominium)
+      .permit(
+        :name, :address, :city, :state,
+        :neighborhood, :zipcode, :number
+      )
+  end
 end
