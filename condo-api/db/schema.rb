@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_28_195303) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_01_224210) do
   create_table "condominia", force: :cascade do |t|
     t.string "name"
     t.string "zipcode"
@@ -21,5 +21,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_195303) do
     t.string "number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name", "city"], name: "index_condominia_on_name_and_city", unique: true
   end
 end
