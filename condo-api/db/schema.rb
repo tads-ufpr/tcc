@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_01_224210) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_08_141812) do
   create_table "condominia", force: :cascade do |t|
     t.string "name"
     t.string "zipcode"
@@ -22,5 +22,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_01_224210) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name", "city"], name: "index_condominia_on_name_and_city", unique: true
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "document", limit: 11, null: false
+    t.date "birthdate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["document"], name: "index_users_on_document", unique: true
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 end
