@@ -1,24 +1,31 @@
-# README
+# Subindo a aplicação
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+> [!WARNING]
+> Não esqueça de atualizar a sua versão local (`git pull`)
 
-Things you may want to cover:
+- [ ] Construir a imagem da aplicação
+      `Este passo só precisa ser feito uma única vez`
 
-* Ruby version
+```sh
+docker-compose build
+```
 
-* System dependencies
+- [ ] Database migrations
+      `Este passo atualizará as configurações das tabelas do banco de dados (SQLite, por enquanto)`
 
-* Configuration
+```sh
+docker-compose run app rails db:migrate
+```
 
-* Database creation
+- [ ] Database seed
+      `Este passo insere no banco as entidades padrões (dados)`
 
-* Database initialization
+```sh
+docker-compose run app rails db:seed
+```
 
-* How to run the test suite
+- [ ] Rodar a aplicação
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```sh
+docker-compose up
+```
