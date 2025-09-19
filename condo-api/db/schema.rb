@@ -32,6 +32,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_09_180158) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["condominium_id"], name: "index_employees_on_condominium_id"
+    t.index ["user_id", "condominium_id"], name: "index_employees_on_user_id_and_condominium_id", unique: true
     t.index ["user_id"], name: "index_employees_on_user_id"
   end
 
