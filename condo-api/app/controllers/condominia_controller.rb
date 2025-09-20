@@ -1,5 +1,6 @@
 class CondominiaController < ApplicationController
   before_action :set_condominium, only: %i[ show update destroy ]
+  skip_before_action :authenticate_user!, only: [:index]
 
   # GET /condominia
   def index
