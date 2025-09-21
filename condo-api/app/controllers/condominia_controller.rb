@@ -18,10 +18,18 @@ class CondominiaController < ApplicationController
   def create
     @condominium = Condominium.new(condominium_params)
 
-    if @condominium.save
-      render json: @condominium, status: :created, location: @condominium
-    else
-      render json: @condominium.errors, status: :unprocessable_entity
+    Condominium.transaction do
+      if @condominium.save
+        Employee.create!(user: current_user,
+          condominium: @condominium,
+          role: Employee::ROLES.first,
+          descrsption: Employee::Default
+        )
+
+        render json: @condominium, status: :created, location: @condominium
+      else
+        render json: @condominium.errors, status: :unprocessable_entity
+      end
     end
   end
 
