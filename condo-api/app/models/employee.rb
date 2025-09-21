@@ -1,5 +1,6 @@
 class Employee < ApplicationRecord
   ROLES = %(admin manager normal).freeze
+  DEFAULT = "CONDOMINIUM CREATOR".freeze
 
   belongs_to :user
   belongs_to :condominium
