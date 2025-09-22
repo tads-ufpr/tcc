@@ -1,5 +1,5 @@
 class Condominium < ApplicationRecord
-  has_many :employees
+  has_many :employees, dependent: :destroy
   has_many :users, through: :employees
 
   validates :city, :state, :address, presence: true
