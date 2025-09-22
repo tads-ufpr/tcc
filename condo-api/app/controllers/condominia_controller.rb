@@ -1,6 +1,7 @@
 class CondominiaController < ApplicationController
-  before_action :set_condominium, only: %i[ show update destroy ]
-  skip_before_action :authenticate_user!, only: [:index]
+  load_and_authorize_resource class: "Condominium"
+
+  skip_authorize_resource only: [:index, :show]
 
   # GET /condominia
   def index
@@ -23,7 +24,7 @@ class CondominiaController < ApplicationController
         Employee.create!(user: current_user,
           condominium: @condominium,
           role: Employee::ROLES.first,
-          descrsption: Employee::Default
+          description: Employee::Default
         )
 
         render json: @condominium, status: :created, location: @condominium
