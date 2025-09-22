@@ -6,8 +6,8 @@
 
 - Adriano Montaguti - GRR20193927
 - Gabriel Felipe Batista dos Santos - GRR20221101
-- Gustavo Jahnz -
-- Gustavo Nielse -
+- Gustavo Jahnz - GRR20221117
+- Gustavo Nielsen - GRR20221083
 
 ## Documentos
 
