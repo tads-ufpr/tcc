@@ -23,7 +23,7 @@ class ApplicationController < ActionController::API
         Rails.application.credentials.devise_jwt_secret_key!
       ).first
 
-      User.find_by(id: payload["user_id"])
+      User.find_by(jti: payload["jti"])
     rescue JWT::DecodeError
       nil
     end
