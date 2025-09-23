@@ -3,14 +3,8 @@
 > [!WARNING]
 > Não esqueça de atualizar a sua versão local (`git pull`)
 
-- [ ] Criar o arquivo .env.development na raiz do projeto
-
-```sh
-touch .env.development
-```
-
-`Feito isso, solicite para algum colaborador o conteúdo deste arquivo, a fim de poder decriptografar as variáveis necessárias.
-O conteúdo deste arquivo não pode ser comprometido.`
+- [ ] Altere o valor da variável RAILS_MASTER_KEY no .env.development
+      `O valor desta variável deve ser solicitado junto a um colaborador por um canal seguro e não deve ser comprometido (compartilhado/versionado)`
 
 - [ ] Construir a imagem da aplicação
       `Este passo só precisa ser feito uma única vez`
