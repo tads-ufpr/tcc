@@ -5,6 +5,7 @@ RSpec.describe "Condominia", type: :request do
   include_context "auth_headers"
 
   let(:user) { FactoryBot.create(:user) }
+  let(:condo) { FactoryBot.create(:condominium) }
 
   describe "GET /condominia" do
     describe "when unauthenticated" do
@@ -35,14 +36,14 @@ RSpec.describe "Condominia", type: :request do
       end
     end
     describe "when authenticated" do
-      let(:auth_headers) { authenticated_headers_for(user) }
+      let(:headers) { json_headers.merge(authenticated_headers_for(user)) }
 
       it "should create the new Condominium" do
         expect {
           post condominia_url,
           params: { condominium: condo_attributes },
           as: :json,
-          headers: authenticated_headers_for(user)
+          headers: headers
         }.to change(Condominium, :count).by(1)
 
         expect(response).to have_http_status(201)
@@ -53,11 +54,18 @@ RSpec.describe "Condominia", type: :request do
           post condominia_url,
           params: { condominium: condo_attributes },
           as: :json,
-          headers: authenticated_headers_for(user)
+          headers:
         }.to change(Employee, :count).by(1)
 
         expect(response).to have_http_status(201)
       end
+    end
+  end
+  describe "GET /condominia/:id" do
+    it "should be allowed to everyone" do
+      get condominia_url, params: { id: condo.id }, headers: json_headers
+
+      expect(response).to have_http_status(200)
     end
   end
 end
