@@ -9,7 +9,9 @@ FactoryBot.define do
     neighborhood { Faker::Address.community }
 
     trait :with_staff do
-      association :employee
+      after(:create) do |condominium, evaluator|
+        create(:employee, :admin, condominium: condominium)
+      end
     end
   end
 end
