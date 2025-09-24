@@ -12,6 +12,7 @@ class ApplicationController < ActionController::API
   end
 
   private
+
   def find_current_user_from_jwt
     token = request.headers["Authorization"]&.split(" ")&.last
 
@@ -23,8 +24,7 @@ class ApplicationController < ActionController::API
         Rails.application.credentials.devise_jwt_secret_key!
       ).first
 
-      User.find_by(id: payload["sub"])
-
+      User.find_by(jti: payload["jti"])
     rescue JWT::DecodeError
       nil
     end

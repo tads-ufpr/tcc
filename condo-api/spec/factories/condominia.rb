@@ -7,5 +7,11 @@ FactoryBot.define do
     number { Faker::Address.building_number }
     zipcode { Faker::Address.zip_code }
     neighborhood { Faker::Address.community }
+
+    trait :with_staff do
+      after(:create) do |condominium, evaluator|
+        create(:employee, :admin, condominium: condominium)
+      end
+    end
   end
 end
