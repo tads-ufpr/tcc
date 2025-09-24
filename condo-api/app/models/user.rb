@@ -8,6 +8,9 @@ class User < ApplicationRecord
   has_many :employees
   has_many :condominia, through: :employees
 
+  has_many :residents
+  has_many :apartments, through: :residents
+
   alias_attribute :cpf, :document
 
   def name
