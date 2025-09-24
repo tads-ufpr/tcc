@@ -12,6 +12,7 @@ class ApplicationController < ActionController::API
   end
 
   private
+
   def find_current_user_from_jwt
     token = request.headers["Authorization"]&.split(" ")&.last
 
