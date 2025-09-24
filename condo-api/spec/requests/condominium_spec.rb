@@ -62,10 +62,21 @@ RSpec.describe "Condominia", type: :request do
     end
   end
   describe "GET /condominia/:id" do
-    it "should be allowed to everyone" do
-      get condominia_url, params: { id: condo.id }, headers: json_headers
+    describe "as guest" do
+      it "should be allowed" do
+        get condominia_url, params: { id: condo.id }, headers: json_headers
 
-      expect(response).to have_http_status(200)
+        expect(response).to have_http_status(200)
+      end
+      it "should not display sensitive data" do
+        get condominia_url, params: { id: condo.id }, headers: json_headers
+
+        response_json = JSON.parse(response.body)
+        expect(response_json).not_to have_key("apartments")
+      end
+    end
+    describe "as admin or resident" do
+      # TODO: should display the apartments and it's residents
     end
   end
 end
