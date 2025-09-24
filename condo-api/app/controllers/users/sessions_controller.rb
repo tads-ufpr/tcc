@@ -4,6 +4,8 @@ class Users::SessionsController < Devise::SessionsController
   include RackSessionsFix
   respond_to :json
 
+  wrap_parameters :user, include: [:email, :password]
+
   private
 
   def respond_with(current_user, _opts = {})
