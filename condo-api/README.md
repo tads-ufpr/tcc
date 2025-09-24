@@ -1,10 +1,10 @@
-# Subindo a aplicação
-
 > [!WARNING]
 > Não esqueça de atualizar a sua versão local (`git pull`)
 
 - [ ] Altere o valor da variável RAILS_MASTER_KEY no .env.development
       `O valor desta variável deve ser solicitado junto a um colaborador por um canal seguro e não deve ser comprometido (compartilhado/versionado)`
+
+# Running on Docker (Windows / Linux / Mac)
 
 - [ ] Construir a imagem da aplicação
       `Este passo só precisa ser feito uma única vez`
@@ -31,4 +31,17 @@ docker-compose run app rails db:seed
 
 ```sh
 docker-compose up
+```
+
+# Running locally (Linux / Mac)
+
+- Certifique-se de que a versão do ruby na sua máquina é a mesma versão indicado pelo arquivo `.ruby-version` (3.2.2)
+- Rode os seguintes comandos, um por vez comando, na raiz do projeto `/condo-api`
+
+```sh
+bundle install
+rails db:create
+rails db:migrate
+rails db:seed
+rails s
 ```
