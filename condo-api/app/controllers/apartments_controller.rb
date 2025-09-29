@@ -1,5 +1,5 @@
 class ApartmentsController < ApplicationController
-  before_action :set_apartment, only: %i[ show update destroy ]
+  load_and_authorize_resource
 
   # GET /apartments
   def index
@@ -39,13 +39,13 @@ class ApartmentsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_apartment
-      @apartment = Apartment.find(params.expect(:id))
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_apartment
+    @apartment = Apartment.find(params.expect(:id))
+  end
 
-    # Only allow a list of trusted parameters through.
-    def apartment_params
-      params.expect(apartment: [ :floor, :door, :tower, :rented, :active ])
-    end
+  # Only allow a list of trusted parameters through.
+  def apartment_params
+    params.expect(apartment: [ :floor, :door, :tower, :rented, :active ])
+  end
 end
