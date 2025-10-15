@@ -13,5 +13,11 @@ FactoryBot.define do
         create(:employee, :admin, condominium: condominium)
       end
     end
+
+    trait :with_apartments do
+      after(:create) do |condominium, evaluator|
+        create(:apartment, condominium: condominium)
+      end
+    end
   end
 end
