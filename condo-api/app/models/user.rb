@@ -6,10 +6,11 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :employees
-  has_many :condominia, through: :employees
+  has_many :condominium_as_employee, through: :employees, source: :condominium
 
   has_many :residents
   has_many :apartments, through: :residents
+  has_many :condominium_as_resident, through: :apartments, source: :condominium
 
   alias_attribute :cpf, :document
 
