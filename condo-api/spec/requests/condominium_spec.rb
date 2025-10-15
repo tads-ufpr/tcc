@@ -24,6 +24,11 @@ RSpec.describe "Condominia", type: :request do
 
         expect(json_response).to be_kind_of(Array)
       end
+      it "doesn't bring apartments info" do
+        json_response = JSON.parse(response.body)
+
+        expect(json_response[0]).not_to have_key("apartments")
+      end
     end
   end
   describe "POST /condiminia" do
