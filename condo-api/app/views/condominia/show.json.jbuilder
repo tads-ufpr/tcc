@@ -2,8 +2,6 @@ json.extract! @condominium, :id, :name, :zipcode, :city, :state, :address, :neig
 
 authorized_apartments = @condominium.apartments.accessible_by(current_ability)
 
-if authorized_apartments.present?
-  json.apartments authorized_apartments do |apartment|
-    json.partial! "apartments/apartment", apartment: apartment
-  end
+json.apartments authorized_apartments do |apartment|
+  json.partial! "apartments/apartment", apartment: apartment
 end

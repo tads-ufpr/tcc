@@ -77,7 +77,7 @@ RSpec.describe "Condominia", type: :request do
       end
       it "does not display sensitive data" do
         response_json = JSON.parse(response.body)
-        expect(response_json).not_to have_key("apartments")
+        expect(response_json["apartments"]).to be_empty
       end
     end
     describe "as admin or resident" do
@@ -93,7 +93,7 @@ RSpec.describe "Condominia", type: :request do
         get condominium_path(condo), headers: user_headers
 
         response_json = JSON.parse(response.body)
-        expect(response_json).not_to have_key("apartments")
+        expect(response_json["apartments"]).to be_empty
       end
     end
   end
