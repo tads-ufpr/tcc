@@ -10,7 +10,6 @@ class CondominiaController < ApplicationController
 
   # GET /condominia/1
   def show
-    render json: @condominium
   end
 
   # POST /condominia
