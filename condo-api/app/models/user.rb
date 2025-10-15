@@ -25,4 +25,15 @@ class User < ApplicationRecord
     self.first_name = parts[0]
     self.last_name = parts[1]
   end
+
+  def related_condominia
+    employee_condos = condominium_as_employee.to_a
+    resident_condos = condominium_as_resident.to_a
+
+    (employee_condos + resident_condos).uniq
+  end
+
+  def related_condominia_ids
+    self.related_condominia.map { |condo| condo.id }
+  end
 end
