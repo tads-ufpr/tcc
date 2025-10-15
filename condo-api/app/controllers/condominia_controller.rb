@@ -1,8 +1,6 @@
 class CondominiaController < ApplicationController
   load_and_authorize_resource class: "Condominium"
 
-  skip_authorize_resource only: [:index, :show]
-
   # GET /condominia
   def index
     @condominia = Condominium.all
