@@ -11,23 +11,50 @@ RSpec.describe "Condominia", type: :request do
   let(:employee_headers) { json_headers.merge(authenticated_headers_for(employee)) }
 
   describe "GET /condominia" do
-    describe "when unauthenticated" do
-      before do
-        get condominia_url, headers: json_headers
-      end
+    before do
+      get condominia_url, headers: json_headers
+    end
 
-      it "should returns success" do
-        expect(response).to have_http_status(200)
-      end
-      it "returns a list of condominium" do
-        json_response = JSON.parse(response.body)
+    it "should returns success" do
+      expect(response).to have_http_status(200)
+    end
+    it "returns a list of condominium" do
+      json_response = JSON.parse(response.body)
 
-        expect(json_response).to be_kind_of(Array)
-      end
-      it "doesn't bring apartments info" do
-        json_response = JSON.parse(response.body)
+      expect(json_response).to be_kind_of(Array)
+    end
+    it "doesn't bring apartments info" do
+      json_response = JSON.parse(response.body)
 
-        expect(json_response[0]).not_to have_key("apartments")
+      expect(json_response[0]).not_to have_key("apartments")
+    end
+
+    describe "with query string" do
+      let!(:condo_a) { FactoryBot.create(:condominium, name: "Lorem", city: 'Curitiba') }
+      let!(:condo_b) { FactoryBot.create(:condominium, name: "Ipsum", city: 'Curitiba') }
+      let!(:condo_c) { FactoryBot.create(:condominium, name: "Loremar") }
+
+      describe "search for Lorem" do
+        it "returns filtered response" do
+          get condominia_url, params: { q: "Lorem" }, headers: json_headers
+
+          response_json = JSON.parse(response.body)
+
+          response_ids = response_json.map { |c| c["id"] }
+          expect(response_ids).to include(condo_c.id, condo_a.id)
+          expect(response_ids).not_to include(condo_b.id)
+        end
+      end
+      describe "search for Curitiba" do
+        it "returns filtered response" do
+          get condominia_url, params: { q: "Curitiba" }, headers: json_headers
+
+          response_json = JSON.parse(response.body)
+
+          response_ids = response_json.map { |c| c["id"] }
+          expect(response_ids).to include(condo_a.id, condo_b.id)
+          expect(response_ids).not_to include(condo_c.id)
+        end
       end
     end
   end
