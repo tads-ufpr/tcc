@@ -24,6 +24,11 @@ RSpec.describe "Condominia", type: :request do
 
         expect(json_response).to be_kind_of(Array)
       end
+      it "doesn't bring apartments info" do
+        json_response = JSON.parse(response.body)
+
+        expect(json_response[0]).not_to have_key("apartments")
+      end
     end
   end
   describe "POST /condiminia" do
@@ -64,20 +69,32 @@ RSpec.describe "Condominia", type: :request do
   end
   describe "GET /condominia/:id" do
     describe "as guest" do
-      it "should be allowed" do
-        get condominia_url, params: { id: condo.id }, headers: json_headers
-
+      before do
+        get condominium_path(condo), params: { id: condo.id }, headers: json_headers
+      end
+      it "is allowed" do
         expect(response).to have_http_status(200)
       end
-      it "should not display sensitive data" do
-        get condominium_path(condo), params: { id: condo.id }, headers: json_headers
-
+      it "does not display sensitive data" do
         response_json = JSON.parse(response.body)
-        expect(response_json).not_to have_key("apartments")
+        expect(response_json["apartments"]).to be_empty
       end
     end
     describe "as admin or resident" do
-      # TODO: should display the apartments and it's residents
+      it "displays the related apartments on it" do
+        get condominium_path(condo), headers: employee_headers
+
+        response_json = JSON.parse(response.body)
+        expect(response_json).to have_key("apartments")
+      end
+    end
+    describe "as user without relation with the condominium" do
+      it "does not display the related apartments" do
+        get condominium_path(condo), headers: user_headers
+
+        response_json = JSON.parse(response.body)
+        expect(response_json["apartments"]).to be_empty
+      end
     end
   end
   describe "DEL /condominia/:id" do

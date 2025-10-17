@@ -6,7 +6,11 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: self
 
   has_many :employees
-  has_many :condominia, through: :employees
+  has_many :condominium_as_employee, through: :employees, source: :condominium
+
+  has_many :residents
+  has_many :apartments, through: :residents
+  has_many :condominium_as_resident, through: :apartments, source: :condominium
 
   alias_attribute :cpf, :document
 
@@ -21,5 +25,16 @@ class User < ApplicationRecord
 
     self.first_name = parts[0]
     self.last_name = parts[1]
+  end
+
+  def related_condominia
+    employee_condos = condominium_as_employee.to_a
+    resident_condos = condominium_as_resident.to_a
+
+    (employee_condos + resident_condos).uniq
+  end
+
+  def related_condominia_ids
+    self.related_condominia.map { |condo| condo.id }
   end
 end

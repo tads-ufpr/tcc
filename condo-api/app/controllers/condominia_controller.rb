@@ -1,8 +1,6 @@
 class CondominiaController < ApplicationController
   load_and_authorize_resource class: "Condominium"
 
-  skip_authorize_resource only: [:index, :show]
-
   # GET /condominia
   def index
     @condominia = Condominium.all
@@ -12,7 +10,6 @@ class CondominiaController < ApplicationController
 
   # GET /condominia/1
   def show
-    render json: @condominium
   end
 
   # POST /condominia

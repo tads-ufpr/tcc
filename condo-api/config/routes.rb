@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   }
 
   resources :condominia
+  resources :apartments
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

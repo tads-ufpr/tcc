@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_24_020921) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_24_164015) do
+  create_table "apartments", force: :cascade do |t|
+    t.integer "condominium_id", null: false
+    t.integer "floor", null: false
+    t.string "number", null: false
+    t.string "tower"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["condominium_id"], name: "index_apartments_on_condominium_id"
+  end
+
   create_table "condominia", force: :cascade do |t|
     t.string "name"
     t.string "zipcode"
@@ -36,6 +46,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_020921) do
     t.index ["user_id"], name: "index_employees_on_user_id"
   end
 
+  create_table "residents", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "apartment_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["apartment_id"], name: "index_residents_on_apartment_id"
+    t.index ["user_id"], name: "index_residents_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -56,6 +75,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_24_020921) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "apartments", "condominia"
   add_foreign_key "employees", "condominia"
   add_foreign_key "employees", "users"
+  add_foreign_key "residents", "apartments"
+  add_foreign_key "residents", "users"
 end
