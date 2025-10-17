@@ -3,7 +3,17 @@ class CondominiaController < ApplicationController
 
   # GET /condominia
   def index
-    @condominia = Condominium.all
+    @condominia = if params[:q].present?
+      Condominium.where("
+        name LIKE '%#{params[:q]}%' OR
+        address LIKE '%#{params[:q]}%' OR
+        city LIKE '%#{params[:q]}%' OR
+        neighborhood LIKE '%#{params[:q]}%' OR
+        zipcode LIKE '%#{params[:q]}%'
+      ")
+    else
+      Condominium.all
+    end
 
     render json: @condominia
   end
