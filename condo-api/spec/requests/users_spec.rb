@@ -36,5 +36,20 @@ RSpec.describe "Users", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    describe "happy path" do
+      it "creates an User" do
+        expect {
+          post users_url, params: user_params.to_json, headers: json_headers
+        }.to change(User, :count).by(1)
+
+        expect(response).to have_http_status(201)
+      end
+      it "returns a token" do
+        post users_url, params: user_params.to_json, headers: json_headers
+
+        expect(response.headers).to have_key("Authorization")
+      end
+    end
   end
 end
