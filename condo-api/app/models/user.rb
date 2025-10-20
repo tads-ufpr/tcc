@@ -14,6 +14,8 @@ class User < ApplicationRecord
 
   alias_attribute :cpf, :document
 
+  validates :document, presence: true
+
   def name
     [first_name, last_name].compact.join(" ")
   end
