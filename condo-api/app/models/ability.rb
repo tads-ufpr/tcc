@@ -5,6 +5,7 @@ class Ability
 
   def initialize(user)
     can :read, Condominium
+    can :create, User
 
     return unless user.present?
 
