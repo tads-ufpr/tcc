@@ -5,7 +5,7 @@ RSpec.describe "/apartments", type: :request do
   include_context "auth_headers"
 
   let(:user) { FactoryBot.create(:user) }
-  let!(:condo) { FactoryBot.create(:condominium, :with_staff, :with_residents) }
+  let!(:condo) { FactoryBot.create(:condominium, :with_staff) }
   let!(:employee) { condo.employees.first.user }
 
   let(:user_headers) { json_headers.merge(authenticated_headers_for(user)) }
