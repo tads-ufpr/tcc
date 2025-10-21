@@ -5,7 +5,8 @@ Rails.application.routes.draw do
   },
   controllers: {
     sessions: "users/sessions",
-    registrations: "users/registrations"
+    registrations: "users/registrations",
+    passwords: "users/passwords"
   }
 
   resources :condominia
