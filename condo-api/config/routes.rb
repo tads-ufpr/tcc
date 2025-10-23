@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  resources :notices
   devise_for :users, path: "user", path_names: {
     sign_in: "login",
     sign_out: "logout"
@@ -10,8 +9,13 @@ Rails.application.routes.draw do
     passwords: "users/passwords"
   }
 
-  resources :condominia
-  resources :apartments
+  resources :condominia do
+    resources :notices, only: [:index]
+  end
+  resources :apartments do
+    resources :notices, only: [:index, :create]
+  end
+  resources :notices, only: [:show, :update, :destroy]
   resources :users, only: [:show, :update, :create]
 
   get "up" => "rails/health#show", as: :rails_health_check
