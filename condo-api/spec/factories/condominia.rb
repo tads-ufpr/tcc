@@ -19,5 +19,18 @@ FactoryBot.define do
         create(:apartment, condominium: condominium)
       end
     end
+
+    trait :with_residents do
+      transient do
+        residents_count { 1 }
+      end
+
+      after(:create) do |condominium, evaluator|
+        evaluator.residents_count.times do
+          apartment = create(:apartment, condominium: condominium)
+          create(:resident, apartment: apartment)
+        end
+      end
+    end
   end
 end

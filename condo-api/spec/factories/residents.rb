@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :resident do
-    user { nil }
-    apartment { nil }
+    association :user
+    association :apartment
   end
 end
