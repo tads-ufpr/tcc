@@ -1,4 +1,7 @@
 # Omakase Ruby styling for Rails
+plugins:
+  - rubocop-rspec
+
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 Layout/AccessModifierIndentation:
@@ -12,3 +15,7 @@ Layout/IndentationWidth:
   Enabled: true
 Layout/LineLength:
   Max: 80
+
+# RSpec
+RSpec/MultipleExpectations:
+  Max: 3
