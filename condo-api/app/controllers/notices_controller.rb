@@ -1,53 +1,72 @@
 class NoticesController < ApplicationController
-  before_action :set_notice, only: %i[ show update destroy ]
+  load_and_authorize_resource :notice, only: [:show, :update, :destroy]
 
-  # GET /notices
-  # GET /notices.json
+  # GET /condominia/:condominium_id/notices
+  # GET /apartments/:apartment_id/notices
   def index
-    @notices = Notice.all
+    if params[:condominium_id].present?
+      @condominium = Condominium.find(params[:condominium_id])
+      authorize! :read, @condominium
+
+      @notices = Notice.joins(:apartment)
+                       .where(apartments: { condominium_id: @condominium.id })
+    elsif params[:apartment_id].present?
+      @apartment = Apartment.find(params[:apartment_id])
+      authorize! :read, @apartment
+
+      @notices = @apartment.notices
+    end
+
+    @notices = @notices.accessible_by(current_ability).order(created_at: :desc)
+
+    render json: @notices
   end
 
   # GET /notices/1
-  # GET /notices/1.json
   def show
+    render json: @notice
   end
 
-  # POST /notices
-  # POST /notices.json
+  # POST /apartments/:apartment_id/notices
   def create
-    @notice = Notice.new(notice_params)
+    @apartment = Apartment.find(params[:apartment_id])
+
+    @notice = @apartment.notices.build(create_notice_params)
+
+    current_employee = current_user.employees.find_by(condominium_id: @apartment.condominium_id)
+    @notice.creator = current_employee
+
+    authorize! :create, @notice
 
     if @notice.save
-      render :show, status: :created, location: @notice
+      render json: @notice, status: :created
     else
       render json: @notice.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /notices/1
-  # PATCH/PUT /notices/1.json
   def update
-    if @notice.update(notice_params)
-      render :show, status: :ok, location: @notice
+    if @notice.update(update_notice_params)
+      render json: @notice
     else
       render json: @notice.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /notices/1
-  # DELETE /notices/1.json
   def destroy
-    @notice.destroy!
+    @notice.destroy
+    head :no_content
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_notice
-    @notice = Notice.find(params.expect(:id))
+
+  def create_notice_params
+    params.require(:notice).permit(:title, :body, :notice_type)
   end
 
-  # Only allow a list of trusted parameters through.
-  def notice_params
-    params.expect(notice: [ :apartment_id, :creator_id, :notice_type, :status, :description, :title, :type_info ])
+  def update_notice_params
+    params.require(:notice).permit(:title, :body, :notice_type, :status)
   end
 end
