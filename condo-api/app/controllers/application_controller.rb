@@ -1,15 +1,30 @@
 class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
 
-  rescue_from CanCan::AccessDenied do |exception|
+  rescue_from CanCan::AccessDenied do |e|
     status = current_user ? :forbidden : :unauthorized
-    render json: { error: exception.message }, status:
+
+    if status == :forbidden
+      message = { authorization: e.message }
+    else
+      message = { authentication: "Resource requires authentication" }
+    end
+
+    render_error(message, status)
   end
 
   protected
 
   def current_user
     @current_user ||= find_current_user_from_jwt
+  end
+
+  def render_error(errors, status)
+    render json: {
+      errors:,
+      status:,
+      code: Rack::Utils.status_code(status)
+    }, status:
   end
 
   private

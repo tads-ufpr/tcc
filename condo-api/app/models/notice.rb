@@ -7,16 +7,16 @@ class Notice < ApplicationRecord
     visitor: 1,
     maintenance: 2,
     communication: 3
-  }
+  }, default: :communication
 
   enum :status, {
     pending: 0,
     acknowledged: 1,
     resolved: 2,
     blocked: 100
-  }
+  }, default: :pending
 
-  validates :creator, :apartment, presence: true
+  validates :creator, :apartment, :title, :status, :notice_type, presence: true
 
   validate :status_transition, on: :update
   validate :valid_creator?, on: [:create, :update]
@@ -44,6 +44,7 @@ class Notice < ApplicationRecord
 
   def status_transition
     return unless status_changed?
+    return if status.blank?
 
     unless can_transition_to?(status.to_sym)
       errors.add(:status, "Invalid status transition from #{status_was} to #{status}")

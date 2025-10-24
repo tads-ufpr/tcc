@@ -37,7 +37,7 @@ class NoticesController < ApplicationController
     if @notice.save
       render json: @notice, status: :created
     else
-      render json: @notice.errors, status: :unprocessable_entity
+      render_error(@notice.errors, :unprocessable_entity)
     end
   end
 
@@ -46,7 +46,7 @@ class NoticesController < ApplicationController
     if @notice.update(update_notice_params)
       render json: @notice
     else
-      render json: @notice.errors, status: :unprocessable_entity
+      render_error(@notice.errors, :unprocessable_entity)
     end
   end
 
@@ -67,6 +67,6 @@ class NoticesController < ApplicationController
   end
 
   def update_notice_params
-    params.require(:notice).permit(:title, :body, :notice_type, :status)
+    params.require(:notice).permit(:status, :type_info)
   end
 end
