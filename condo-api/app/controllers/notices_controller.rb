@@ -1,4 +1,5 @@
 class NoticesController < ApplicationController
+  load_and_authorize_resource :apartment, only: [:create]
   load_and_authorize_resource :notice, through: :apartment, only: [:create]
   load_and_authorize_resource :notice, only: [:show, :update, :destroy]
 
@@ -30,14 +31,8 @@ class NoticesController < ApplicationController
 
   # POST /apartments/:apartment_id/notices
   def create
-    @apartment = Apartment.find(params[:apartment_id])
-
-    @notice = @apartment.notices.build(create_notice_params)
-
     current_employee = current_user.employees.find_by(condominium_id: @apartment.condominium_id)
     @notice.creator = current_employee
-
-    authorize! :create, @notice
 
     if @notice.save
       render json: @notice, status: :created
@@ -62,6 +57,10 @@ class NoticesController < ApplicationController
   end
 
   private
+
+  def notice_params
+    params.require(:notice).permit(:title, :description, :notice_type, :type_info, :status)
+  end
 
   def create_notice_params
     params.require(:notice).permit(:title, :body, :notice_type)
