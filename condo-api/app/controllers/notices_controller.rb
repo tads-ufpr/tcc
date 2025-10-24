@@ -1,4 +1,5 @@
 class NoticesController < ApplicationController
+  load_and_authorize_resource :notice, through: :apartment, only: [:create]
   load_and_authorize_resource :notice, only: [:show, :update, :destroy]
 
   # GET /condominia/:condominium_id/notices
@@ -6,13 +7,13 @@ class NoticesController < ApplicationController
   def index
     if params[:condominium_id].present?
       @condominium = Condominium.find(params[:condominium_id])
-      authorize! :read, @condominium
+      authorize! :read_notices, @condominium
 
       @notices = Notice.joins(:apartment)
                        .where(apartments: { condominium_id: @condominium.id })
     elsif params[:apartment_id].present?
       @apartment = Apartment.find(params[:apartment_id])
-      authorize! :read, @apartment
+      authorize! :read_notices, @apartment
 
       @notices = @apartment.notices
     end
