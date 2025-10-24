@@ -2,7 +2,8 @@ class ApplicationController < ActionController::API
   include CanCan::ControllerAdditions
 
   rescue_from CanCan::AccessDenied do |exception|
-    render json: { error: exception.message }, status: :unauthorized
+    status = current_user ? :forbidden : :unauthorized
+    render json: { error: exception.message }, status:
   end
 
   protected
