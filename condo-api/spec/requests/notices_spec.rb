@@ -69,7 +69,7 @@ RSpec.describe '/notices', type: :request do
     end
   end
 
-  describe 'GET /apartments/:apartmend_id/notices' do
+  describe 'GET /apartments/:apartment_id/notices' do
     before do |test|
       headers = json_headers
       headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
@@ -296,7 +296,6 @@ RSpec.describe '/notices', type: :request do
       end
     end
   end
-
 
   describe 'DELETE /notices/:id' do
     let(:notice) {
