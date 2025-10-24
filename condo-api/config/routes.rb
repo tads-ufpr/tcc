@@ -9,8 +9,13 @@ Rails.application.routes.draw do
     passwords: "users/passwords"
   }
 
-  resources :condominia
-  resources :apartments
+  resources :condominia do
+    resources :notices, only: [:index]
+  end
+  resources :apartments do
+    resources :notices, only: [:index, :create]
+  end
+  resources :notices, only: [:show, :update, :destroy]
   resources :users, only: [:show, :update, :create]
 
   get "up" => "rails/health#show", as: :rails_health_check
