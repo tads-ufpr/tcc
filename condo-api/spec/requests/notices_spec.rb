@@ -69,6 +69,64 @@ RSpec.describe '/notices', type: :request do
     end
   end
 
+  describe 'GET /apartments/:apartmend_id/notices' do
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      get apartment_notices_url(apartment_id), headers:
+    end
+
+    describe "when unauthenticated" do
+      let(:apartment_id) { condo.apartments.first.id }
+
+      it "deny the access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when :employee from unrelated Condominium", :auth do
+      let(:apartment_id) { condo.apartments.first.id }
+      let(:condo_2) { create(:condominium, :with_staff) }
+      let(:user) { condo_2.employees.first.user }
+
+      it "deny the access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee", :auth do
+      let(:apartment_id) { condo.apartments.first.id }
+      let(:user) { condo.employees.first.user }
+
+      it "allows the request" do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "returns a list of Apartments Notices" do
+        expect(response.parsed_body).to be_an_instance_of(Array)
+      end
+    end
+
+    describe "when :resident from unrelated Apartment", :auth do
+      let(:apartment_id) { condo.apartments.first.id }
+      let(:user) { condo.apartments.second.residents.first.user }
+
+      it "deny the access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :resident", :auth do
+      let(:apartment_id) { condo.apartments.first.id }
+      let(:user) { condo.apartments.first.residents.first.user }
+
+      it "allows the request" do
+        expect(response).to have_http_status(:success)
+      end
+    end
+  end
+
   describe 'POST /apartments/:apartment_id/notices' do
     let(:notice_params) {
       attributes_for(:notice,

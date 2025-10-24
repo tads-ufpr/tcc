@@ -17,6 +17,7 @@ class Ability
 
     can :read_notices, Condominium, id: user.employees.pluck(:condominium_id)
     can :read_notices, Apartment, residents: { user_id: user.id }
+    can :read_notices, Apartment, condominium_id: user.employees.pluck(:condominium_id)
 
     can :read, Apartment, condominium: { id: user.related_condominia_ids }
     can :read, Apartment, condominium: { id: user.employees.pluck(:condominium_id) }
