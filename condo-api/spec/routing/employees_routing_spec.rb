@@ -3,16 +3,14 @@ require "rails_helper"
 
 RSpec.describe EmployeesController, type: :routing do
   describe "routing" do
-    it "routes to #index via GET" do
-      expect(get: "/employees").to route_to("employees#index")
-    end
+    describe "nested /condominia routes" do
+      it "routes to #index" do
+        expect(get: "/condominia/1/employees").to route_to("employees#index", condominium_id: '1')
+      end
 
-    it "routes to #show via GET" do
-      expect(get: "/employees/1").to route_to("employees#show", id: '1')
-    end
-
-    it "routes to #create via POST" do
-      expect(post: "/employees").to route_to("employees#create")
+      it "routes to #create" do
+        expect(post: "/condominia/1/employees").to route_to("employees#create", condominium_id: '1')
+      end
     end
 
     it "routes to #update via PUT" do
