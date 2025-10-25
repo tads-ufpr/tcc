@@ -1,39 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe "Employees", type: :request do
-  describe "GET /index" do
-    it "returns http success" do
-      get "/employees/index"
-      expect(response).to have_http_status(:success)
+  include_context 'json_requests'
+  include_context 'auth_headers'
+
+  describe "GET /employees" do
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authentication_headers_for(user)) if test.metadata[:auth]
+
+      get employees_url, headers:
+    end
+
+    it "requires authentication" do
+      expect(response).to have_http_status(:unauthorized)
     end
   end
-
-  describe "GET /show" do
-    it "returns http success" do
-      get "/employees/show"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /create" do
-    it "returns http success" do
-      get "/employees/create"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /update" do
-    it "returns http success" do
-      get "/employees/update"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /delete" do
-    it "returns http success" do
-      get "/employees/delete"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
 end
