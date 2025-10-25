@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
   resources :notices, only: [:show, :update, :destroy]
   resources :users, only: [:show, :update, :create]
+  resources :employees
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
