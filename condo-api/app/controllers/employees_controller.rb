@@ -1,5 +1,5 @@
 class EmployeesController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :employee, only: [:show, :update, :destroy]
 
   def index
   end
