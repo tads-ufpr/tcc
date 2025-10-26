@@ -25,6 +25,9 @@ class Ability
     can :read, Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
     can :read, Notice, apartment: { id: user.apartments.pluck(:id) }
 
+    can :manage, Employee, condominium: { id: user.employees.admins.pluck(:condominium_id) }
+    can :index, Employee, condominium: { id: user.related_condominia_ids }
+
     can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
   end
 end
