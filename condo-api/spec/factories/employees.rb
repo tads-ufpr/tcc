@@ -3,16 +3,15 @@ FactoryBot.define do
     association :user
     association :condominium
 
-    role { Employee::ROLES.last } # normal
+    role { :colaborator }
     description { Faker::Job.title }
 
-
     trait :admin do
-      role { Employee::ROLES.first }
+      role { :admin }
     end
 
     trait :manager do
-      role { Employee::ROLES.second }
+      role { :manager }
     end
   end
 end
