@@ -30,7 +30,7 @@ class CondominiaController < ApplicationController
       if @condominium.save
         Employee.create!(user: current_user,
           condominium: @condominium,
-          role: Employee::ROLES.first,
+          role: :admin,
           description: Employee::Default
         )
 
