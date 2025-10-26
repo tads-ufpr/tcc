@@ -19,3 +19,5 @@ Layout/LineLength:
 # RSpec
 RSpec/MultipleExpectations:
   Max: 3
+RSpec/NestedGroups:
+  Max: 4
