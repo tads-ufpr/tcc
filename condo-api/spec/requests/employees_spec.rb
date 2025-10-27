@@ -129,7 +129,7 @@ RSpec.describe "Employees", type: :request do
         end
 
         it "deny the employee creation" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "describes the error" do

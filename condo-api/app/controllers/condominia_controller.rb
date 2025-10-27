@@ -36,7 +36,7 @@ class CondominiaController < ApplicationController
 
         render json: @condominium, status: :created, location: @condominium
       else
-        render json: @condominium.errors, status: :unprocessable_entity
+        render json: @condominium.errors, status: :unprocessable_content
       end
     end
   end
@@ -46,7 +46,7 @@ class CondominiaController < ApplicationController
     if @condominium.update(condominium_params)
       render json: @condominium
     else
-      render json: @condominium.errors, status: :unprocessable_entity
+      render json: @condominium.errors, status: :unprocessable_content
     end
   end
 

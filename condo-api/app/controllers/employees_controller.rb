@@ -14,7 +14,7 @@ class EmployeesController < ApplicationController
     if @employee.save
       render json: @employee, status: :created
     else
-      render_error(@employee.errors, :unprocessable_entity)
+      render_error(@employee.errors, :unprocessable_content)
     end
   end
 
@@ -22,7 +22,7 @@ class EmployeesController < ApplicationController
     if @employee.update(employee_params)
       render json: @employee
     else
-      render json: @employee.errors, status: :unprocessable_entity
+      render json: @employee.errors, status: :unprocessable_content
     end
   end
 

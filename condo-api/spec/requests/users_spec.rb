@@ -23,7 +23,7 @@ RSpec.describe "Users", type: :request do
       end
 
       it "deny creating without password", missing: "password" do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "deny creating without email", missing: "email" do
@@ -33,7 +33,7 @@ RSpec.describe "Users", type: :request do
       end
 
       it "deny crearting without document", missing: "document" do
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -45,6 +45,7 @@ RSpec.describe "Users", type: :request do
 
         expect(response).to have_http_status(201)
       end
+
       it "returns a token" do
         post users_url, params: user_params.to_json, headers: json_headers
 
