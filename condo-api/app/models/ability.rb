@@ -12,6 +12,8 @@ class Ability
 
     return unless user.present?
 
+    # Any user can create a new Condominium, this will create an Employee(:admin)
+    # So only Employees(:admins) can manage the Condominium
     can :create, Condominium
     can :manage, Condominium, employees: { user_id: user.id, role: "admin" }
 
@@ -22,10 +24,16 @@ class Ability
     can :read, Apartment, condominium: { id: user.related_condominia_ids }
     can :read, Apartment, condominium: { id: user.employees.pluck(:condominium_id) }
 
+    # Only residents and employees are allowed to read a notice
+    # Employee can read any notice
+    # Residente can only read it's Apartment notices
     can :read, Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
     can :read, Notice, apartment: { id: user.apartments.pluck(:id) }
 
+    # :admins only can interact with Employee
     can [:create, :read, :update], Employee, condominium: { id: user.employees.admins.pluck(:condominium_id) }
+    # User can only delete an Employee if himself is :admin
+    # and if he is not trying to delete himself
     can :destroy, Employee do |employee_to_destroy|
       related_condo_emp = user.employees.admins.pluck(:condominium_id).include?(employee_to_destroy.condominium_id)
 
@@ -33,9 +41,10 @@ class Ability
 
       related_condo_emp && is_not_self
     end
-
+    # Any resident or employee can request for employee's #index
     can :read_employees, Condominium, id: user.related_condominia_ids
 
+    # TO DO - remove the ability to destroy a Notice. It should be closed instead
     can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
   end
 end
