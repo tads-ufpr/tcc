@@ -113,11 +113,27 @@ RSpec.describe "Employees", type: :request do
     describe "when :employee", :auth do
       let(:user) { condo.employees.first.user }
 
-      context "with empty" do
+      context "with empty params" do
         let(:params) { {}.to_json }
 
         it "invalidate the request" do
           expect(response).to have_http_status(:bad_request)
+        end
+      end
+
+      context "with invalid parameters" do
+        let(:params) do
+          p = attributes_for(:employee, condominium_id: condominium_id)
+          p[:user_id] = "OK"
+          p.to_json
+        end
+
+        it "deny the employee creation" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "describes the error" do
+          expect(response.parsed_body["errors"]).to have_key("user")
         end
       end
 

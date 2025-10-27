@@ -8,14 +8,13 @@ class EmployeesController < ApplicationController
   end
 
   def show
-    render json: @employee
   end
 
   def create
     if @employee.save
       render json: @employee, status: :created
     else
-      render json: @employee.errors, status: :unprocessable_entity
+      render_error(@employee.errors, :unprocessable_entity)
     end
   end
 
