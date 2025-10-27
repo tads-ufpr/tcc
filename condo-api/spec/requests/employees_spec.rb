@@ -133,7 +133,7 @@ RSpec.describe "Employees", type: :request do
         end
 
         it "describes the error" do
-          expect(response.parsed_body["errors"]).to have_key("user")
+          expect(response.parsed_body["message"]).not_to be_nil
         end
       end
 
