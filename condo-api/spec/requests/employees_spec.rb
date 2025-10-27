@@ -190,4 +190,146 @@ RSpec.describe "Employees", type: :request do
       end
     end
   end
+
+  describe "PUT /employees/:id" do
+    let(:employee_id) { condo.employees.first.id }
+    let(:params) { condo.employees.first.to_json }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      put employee_url(employee_id), params:, headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when :resident", :auth do
+      let(:user) { condo.residents.first.user }
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee from unrelated Condominium", :auth do
+      let(:user) do
+        condo_2 = create(:condominium, :with_staff)
+        condo_2.employees.first.user
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee", :auth do
+      let(:user) { condo.employees.first.user }
+
+      context "when not allowed parameter" do
+        let(:params) do
+          emp = condo.employees.first
+          emp.condominium_id = 2
+          emp.to_json
+        end
+
+        it "allows the request" do
+          expect(response).to have_http_status(:success)
+        end
+
+        it "doesnt update the modified param" do
+          expect(response.parsed_body["condominium_id"]).to eq(condo.id)
+        end
+      end
+
+      context "with allowed parameter" do
+        let(:params) do
+          emp = condo.employees.first
+          emp.description = "ANYTHING"
+          emp.to_json
+        end
+
+        it "allows the request" do
+          expect(response).to have_http_status(:success)
+        end
+
+        it "actually updates the value" do
+          expect(response.parsed_body["description"]).to eq("ANYTHING")
+        end
+      end
+    end
+  end
+
+  describe "DELTE /employees/:id" do
+    let(:employee_id) do
+      emp = create(:employee, condominium: condo, user: condo.residents.last.user)
+      emp.id
+    end
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      delete employee_url(employee_id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when :resident", :auth do
+      let(:user) { condo.residents.first.user }
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee from unrelated Condominium", :auth do
+      let(:user) do
+        condo_2 = create(:condominium, :with_staff)
+        condo_2.employees.first.user
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee without admin flag", :auth do
+      let(:user) do
+        u = create(:user)
+        create(:employee, condominium: condo, user: u)
+        u
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee with admin flag", :auth do
+      let(:user) { condo.employees.first.user }
+
+      context "when :employee_id is not itself" do
+        it "allows the request" do
+          expect(response).to have_http_status(:success)
+        end
+      end
+
+      context "when :employee_id is itself" do
+        let(:employee_id) { condo.employees.first.user }
+
+        it "allows the request" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+  end
 end
