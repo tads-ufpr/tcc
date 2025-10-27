@@ -21,13 +21,36 @@ class ApplicationController < ActionController::API
 
   def render_error(errors, status)
     render json: {
-      errors:,
+      message: string_error(errors),
       status:,
       code: Rack::Utils.status_code(status)
     }, status:
   end
 
+  rescue_from ActionController::ParameterMissing do |exception|
+    render json: {
+      message: "Required parameter is missing: #{exception.param}",
+      status: Rack::Utils.status_code(:bad_request),
+      code: :bad_request
+    }, status: :bad_request
+  end
+
   private
+
+  # TODO - Remove this junk later
+  def string_error(errors)
+    m = ""
+    if errors.class.name == "ActiveModel::Errors"
+      errors.each do |e|
+        m = "#{e.attribute} #{e.message};#{m}"
+      end
+    else
+      errors.each do |k, v|
+        m = "#{v}"
+      end
+    end
+    m
+  end
 
   def find_current_user_from_jwt
     token = request.headers["Authorization"]&.split(" ")&.last

@@ -20,7 +20,7 @@ class ApartmentsController < ApplicationController
     if @apartment.save
       render json: @apartment, status: :created, location: @apartment
     else
-      render json: @apartment.errors, status: :unprocessable_entity
+      render_errors(@apartment.errors, :unprocessable_content)
     end
   end
 
@@ -29,7 +29,7 @@ class ApartmentsController < ApplicationController
     if @apartment.update(apartment_params)
       render json: @apartment
     else
-      render json: @apartment.errors, status: :unprocessable_entity
+      render_errors(@apartment.errors, :unprocessable_content)
     end
   end
 

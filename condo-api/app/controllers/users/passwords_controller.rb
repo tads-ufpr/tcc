@@ -13,7 +13,7 @@ class Users::PasswordsController < Devise::PasswordsController
     if successfully_sent?(resource)
       render json: { status: 200, message: "Password reset instructions sent successfully." }, status: :ok
     else
-      render json: { status: :unprocessable_entity, message: resource.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      render json: { status: :unprocessable_content, message: resource.errors.full_messages.to_sentence }, status: :unprocessable_content
     end
   end
 
@@ -25,7 +25,7 @@ class Users::PasswordsController < Devise::PasswordsController
     if resource.errors.empty?
       render json: { status: 200, message: "Password updated successfully." }, status: :ok
     else
-      render json: { status: :unprocessable_entity, message: resource.errors.full_messages.to_sentence }, status: :unprocessable_entity
+      render json: { status: :unprocessable_content, message: resource.errors.full_messages.to_sentence }, status: :unprocessable_content
     end
   end
 end

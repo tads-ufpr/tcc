@@ -30,13 +30,13 @@ class CondominiaController < ApplicationController
       if @condominium.save
         Employee.create!(user: current_user,
           condominium: @condominium,
-          role: Employee::ROLES.first,
+          role: :admin,
           description: Employee::Default
         )
 
         render json: @condominium, status: :created, location: @condominium
       else
-        render json: @condominium.errors, status: :unprocessable_entity
+        render json: @condominium.errors, status: :unprocessable_content
       end
     end
   end
@@ -46,7 +46,7 @@ class CondominiaController < ApplicationController
     if @condominium.update(condominium_params)
       render json: @condominium
     else
-      render json: @condominium.errors, status: :unprocessable_entity
+      render json: @condominium.errors, status: :unprocessable_content
     end
   end
 

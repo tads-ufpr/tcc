@@ -37,7 +37,7 @@ class NoticesController < ApplicationController
     if @notice.save
       render json: @notice, status: :created
     else
-      render_error(@notice.errors, :unprocessable_entity)
+      render_error(@notice.errors, :unprocessable_content)
     end
   end
 
@@ -46,7 +46,7 @@ class NoticesController < ApplicationController
     if @notice.update(update_notice_params)
       render json: @notice
     else
-      render_error(@notice.errors, :unprocessable_entity)
+      render_error(@notice.errors, :unprocessable_content)
     end
   end
 

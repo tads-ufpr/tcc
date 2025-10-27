@@ -11,12 +11,14 @@ Rails.application.routes.draw do
 
   resources :condominia do
     resources :notices, only: [:index]
+    resources :employees, only: [:index, :create]
   end
   resources :apartments do
     resources :notices, only: [:index, :create]
   end
   resources :notices, only: [:show, :update, :destroy]
   resources :users, only: [:show, :update, :create]
+  resources :employees, only: [:show, :update, :destroy]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

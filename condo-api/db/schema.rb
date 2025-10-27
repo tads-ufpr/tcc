@@ -37,7 +37,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_110208) do
   create_table "employees", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "condominium_id", null: false
-    t.string "role", default: "normal", null: false
+    t.string "role", default: "colaborator", null: false
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -63,6 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_110208) do
   create_table "residents", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "apartment_id", null: false
+    t.boolean "owner", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["apartment_id"], name: "index_residents_on_apartment_id"

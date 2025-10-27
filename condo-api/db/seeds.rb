@@ -31,14 +31,14 @@ end
 end
 
 # FIRST CONDOMINIUM CONFIGS
-Employee.create({
+emp = Employee.create({
   user_id: User.first.id,
   condominium_id: Condominium.first.id,
   role: "admin",
   description: "Síndico"
 })
 
-Resident.create({
+res = Resident.create({
   user_id: User.first.id,
   apartment_id: Apartment.first.id
 })
@@ -46,4 +46,11 @@ Resident.create({
 Resident.create({
   user_id: User.second.id,
   apartment_id: Apartment.second.id
+})
+
+Notice.create({
+  apartment_id: res.apartment_id,
+  creator_id: emp.id,
+  description: Faker::Lorem.sentence,
+  title: Faker::Lorem.word
 })

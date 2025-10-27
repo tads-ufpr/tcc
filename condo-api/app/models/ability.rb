@@ -25,6 +25,17 @@ class Ability
     can :read, Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
     can :read, Notice, apartment: { id: user.apartments.pluck(:id) }
 
+    can [:create, :read, :update], Employee, condominium: { id: user.employees.admins.pluck(:condominium_id) }
+    can :destroy, Employee do |employee_to_destroy|
+      related_condo_emp = user.employees.admins.pluck(:condominium_id).include?(employee_to_destroy.condominium_id)
+
+      is_not_self = (employee_to_destroy.user_id != user.id)
+
+      related_condo_emp && is_not_self
+    end
+
+    can :read_employees, Condominium, id: user.related_condominia_ids
+
     can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
   end
 end
