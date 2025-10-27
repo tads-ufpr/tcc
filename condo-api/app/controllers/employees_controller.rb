@@ -1,10 +1,14 @@
 class EmployeesController < ApplicationController
   load_and_authorize_resource :condominium, only: [:create, :index]
-  load_and_authorize_resource :employee, through: :condominium, only: [:index, :create]
+  load_and_authorize_resource :employee, through: :condominium, only: [:create]
   load_and_authorize_resource :employee, only: [:show, :update, :destroy]
 
   def index
-    render json: @employees
+    authorize! :read_employees, @condominium
+
+    @employees = @condominium.employees
+                             .includes(:user)
+                             .accessible_by(current_ability)
   end
 
   def show
