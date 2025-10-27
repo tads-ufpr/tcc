@@ -142,4 +142,52 @@ RSpec.describe "Employees", type: :request do
       end
     end
   end
+
+  describe "GET /employees/:id" do
+    let(:employee_id) { condo.employees.first.id }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      get employee_url(employee_id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when :resident", :auth do
+      let(:user) { condo.residents.first.user }
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee from unrelated Condominium", :auth do
+      let(:user) do
+        condo_2 = create(:condominium, :with_staff)
+        condo_2.employees.first.user
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when :employee", :auth do
+      let(:user) { condo.employees.first.user }
+
+      it "allows the request" do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "display the employee's name" do
+        expect(response.parsed_body).to have_key("user")
+      end
+    end
+  end
 end
