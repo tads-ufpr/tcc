@@ -14,9 +14,9 @@ gem "devise"
 gem "devise-jwt"
 gem "cancancan"
 gem "rack-cors"
-gem "jsonapi-serializer"
 gem "jbuilder"
 gem "olive_branch"
+gem "active_model_serializers"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
