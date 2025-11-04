@@ -20,6 +20,7 @@ class CondominiaController < ApplicationController
 
   # GET /condominia/1
   def show
+    render json: @condominium, scope: current_ability
   end
 
   # POST /condominia
@@ -34,9 +35,12 @@ class CondominiaController < ApplicationController
           description: Employee::Default
         )
 
-        render json: @condominium, status: :created, location: @condominium
+        render json: @condominium,
+          status: :created,
+          location: @condominium,
+          scope: current_ability
       else
-        render json: @condominium.errors, status: :unprocessable_content
+        render_error(@condominium.errors, :unprocessable_content)
       end
     end
   end
@@ -46,7 +50,7 @@ class CondominiaController < ApplicationController
     if @condominium.update(condominium_params)
       render json: @condominium
     else
-      render json: @condominium.errors, status: :unprocessable_content
+      render_error(@condominium.errors, :unprocessable_content)
     end
   end
 
@@ -67,5 +71,9 @@ class CondominiaController < ApplicationController
         :name, :address, :city, :state,
         :neighborhood, :zipcode, :number
       )
+  end
+
+  def read_options
+    { include: [:apartments], params: { ability: current_ability } }
   end
 end

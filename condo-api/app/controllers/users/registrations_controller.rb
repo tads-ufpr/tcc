@@ -10,7 +10,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       render json: {
         status: 200,
         message: "Signed up successfully",
-        data: UserSerializer.new(current_user).serializable_hash[:data][:attributes]
+        user: UserSerializer.new(current_user).serializable_hash[:data][:attributes]
       }
     else
       render json: {

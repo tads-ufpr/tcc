@@ -8,6 +8,8 @@ Bundler.require(*Rails.groups)
 
 module CondoApi
   class Application < Rails::Application
+    config.middleware.use OliveBranch::Middleware
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 

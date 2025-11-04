@@ -23,7 +23,7 @@ RSpec.describe 'Condominia', type: :request do
       end
 
       it 'does not bring apartments info' do
-        expect(response.parsed_body[0]).not_to have_key('apartments')
+        expect(response.parsed_body[0]["apartments"]).to be_empty
       end
     end
 
@@ -49,24 +49,31 @@ RSpec.describe 'Condominia', type: :request do
   end
 
   describe 'POST /condiminia' do
-    let(:condo_attributes) { attributes_for(:condominium) }
-    let(:user_headers) { json_headers.merge(authenticated_headers_for(user)) }
+    let(:params) { { condominium: attributes_for(:condominium) } }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      post condominia_url, params: params.to_json, headers:
+    end
 
     context 'when unauthenticated' do
-      it 'is forbidden' do
-        post condominia_url, params: { condominium: condo_attributes }, as: :json
-
+      it 'deny access' do
         expect(response).to have_http_status(:unauthorized)
       end
     end
 
-    context 'when authenticated' do
-      it 'creates the new Condominium and the Employee entity for the User' do
-        expect do
-          post condominia_url, params: { condominium: condo_attributes }, as: :json, headers: user_headers
-        end.to change(Condominium, :count).by(1).and change(Employee, :count).by(1)
-
+    context 'when authenticated', :auth do
+      it 'creates the new Condominium' do
         expect(response).to have_http_status(:created)
+      end
+
+      it 'creates a new employee with current_user as :admin' do
+        last_created_employee = Employee.last
+
+        expect(last_created_employee.user_id).to eq(user.id)
+        expect(last_created_employee.role).to eq("admin")
       end
     end
   end

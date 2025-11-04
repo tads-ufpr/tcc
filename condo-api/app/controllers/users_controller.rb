@@ -1,6 +1,12 @@
 class UsersController < ApplicationController
   load_and_authorize_resource
 
+  wrap_parameters :user, include: [
+    :email, :password, :password_confirmation,
+    :first_name, :last_name, :name,
+    :document, :cpf, :birthdate
+  ]
+
   def show
   end
 
