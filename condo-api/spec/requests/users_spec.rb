@@ -52,5 +52,38 @@ RSpec.describe "Users", type: :request do
         expect(response.headers).to have_key("Authorization")
       end
     end
+
+    describe "when sending camelCase params" do
+      let(:params) do
+        {
+          firstName: "Tester",
+          lastName: "Camelized",
+          email: "test@test.com",
+          birthdate: "15/12/2000",
+          password: "test123",
+          passwordConfirmation: "test123",
+          document: Faker::IdNumber.brazilian_citizen_number
+        }
+      end
+
+      before do |test|
+        headers = json_headers
+        headers = headers.merge({ "Key-Inflection": "camel" }) if test.metadata[:inflection]
+
+        post users_url, params: params.to_json, headers:
+      end
+
+      context "without the Key-Inflection header" do
+        it "doesn't creates the entity" do
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
+
+      context "with the Key-Inflection header" do
+        it "creates the user", :inflection do
+          expect(response).to have_http_status(:created)
+        end
+      end
+    end
   end
 end
