@@ -11,10 +11,10 @@ RSpec.describe "/apartments", type: :request do
   let(:user_headers) { json_headers.merge(authenticated_headers_for(user)) }
   let(:employee_headers) { json_headers.merge(authenticated_headers_for(employee)) }
 
-  describe "GET /apartments" do
+  describe "GET /condominia/:condominium_id/apartments" do
     describe "when unauthenticated" do
       it "should return unauthorized" do
-        get apartments_url, headers: json_headers
+        get condominium_apartments_url(condo), headers: json_headers
 
         expect(response).to have_http_status(401)
       end

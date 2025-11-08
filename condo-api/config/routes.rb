@@ -12,8 +12,9 @@ Rails.application.routes.draw do
   resources :condominia do
     resources :notices, only: [:index]
     resources :employees, only: [:index, :create]
+    resources :apartments, only: [:index, :create]
   end
-  resources :apartments do
+  resources :apartments, only: [:show, :update, :destroy] do
     resources :notices, only: [:index, :create]
   end
   resources :notices, only: [:show, :update, :destroy]
