@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_21_110208) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_09_000128) do
   create_table "apartments", force: :cascade do |t|
     t.integer "condominium_id", null: false
     t.integer "floor", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_21_110208) do
     t.string "tower"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0
     t.index ["condominium_id"], name: "index_apartments_on_condominium_id"
   end
 
