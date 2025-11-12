@@ -5,5 +5,13 @@ class Apartment < ApplicationRecord
   has_many :users, through: :residents
   has_many :notices, dependent: :destroy
 
-  validates :number, presence: true
+  enum :status, {
+    pending: 0,
+    approved: 1
+  }, default: :pending
+
+  validates :number, :floor, presence: true
+
+  scope :approveds, -> { where(status: :approved) }
+  scope :pendings, -> { where(status: :pending) }
 end
