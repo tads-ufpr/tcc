@@ -1,7 +1,8 @@
 class ApartmentsController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :condominium, only: [:index, :create]
+  load_and_authorize_resource :apartment, through: :condominium, only: [:index, :create]
 
-  # GET /apartments
+  # GET /condominia/:condominium_id/apartments
   def index
     @apartments = Apartment.all
 
@@ -13,14 +14,19 @@ class ApartmentsController < ApplicationController
     render json: @apartment
   end
 
-  # POST /apartments
+  # POST /condominia/:condominium_id/apartments
   def create
     @apartment = Apartment.new(apartment_params)
 
-    if @apartment.save
-      render json: @apartment, status: :created, location: @apartment
-    else
-      render_errors(@apartment.errors, :unprocessable_content)
+    Apartment.transaction do
+      @condominium.apartments << @apartment
+      if @apartment.save
+        @apartment.residents << Resident.new(user: current_user)
+
+        render json: @apartment, status: :created, location: @apartment
+      else
+        render_error(@apartment.errors, :unprocessable_content)
+      end
     end
   end
 
@@ -39,13 +45,8 @@ class ApartmentsController < ApplicationController
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_apartment
-    @apartment = Apartment.find(params.expect(:id))
-  end
-
   # Only allow a list of trusted parameters through.
   def apartment_params
-    params.expect(apartment: [ :floor, :door, :tower, :rented, :active ])
+    params.require(:apartment).permit([ :floor, :number, :tower ])
   end
 end
