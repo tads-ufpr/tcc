@@ -46,7 +46,7 @@ class ApartmentsController < ApplicationController
   # PATCH/PUT /apartments/1
   def update
     if @apartment.update(apartment_params)
-      render json: @apartment
+      render json: @apartment, include: []
     else
       render_errors(@apartment.errors, :unprocessable_content)
     end
