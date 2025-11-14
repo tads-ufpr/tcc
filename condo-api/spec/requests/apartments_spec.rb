@@ -4,19 +4,79 @@ RSpec.describe "/apartments", type: :request do
   include_context "json_requests"
   include_context "auth_headers"
 
-  let!(:condo) { create(:condominium, :with_staff) }
+  let!(:condo) { create(:condominium, :with_staff, :with_residents, residents_count: 3) }
+  let(:query_params) { {} }
 
   describe "GET /condominia/:condominium_id/apartments" do
+    let!(:old_apartment) { create(:apartment, :approved, condominium: condo, created_at: 3.days.ago) }
+    let!(:pending_apartment) { create(:apartment, condominium: condo) }
+
     before do |test|
       headers = json_headers
       headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+      params = {}
+      params = params.merge(query_params) if test.metadata[:query_param]
 
-      get condominium_apartments_url(condo.id), headers:
+      get condominium_apartments_url(condo.id), params:, headers:
     end
 
     describe "when unauthenticated" do
       it "returns unauthorized" do
         expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated as Employee", :auth do
+      let(:user) { condo.employees.first.user }
+
+      it "succeed" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays all apartments" do
+        expect(response.parsed_body).to be_an(Array)
+        expect(response.parsed_body.count).to eq(5)
+      end
+
+      it "displays the residents" do
+        expect(response.parsed_body.first).to have_key("status")
+        expect(response.parsed_body.first).to have_key("residents")
+      end
+
+      describe "with query_params for created_after", :query_param do
+        let(:query_params) { { created_after: 1.day.ago.iso8601 } }
+
+        it "returns only newer apartments" do
+          expect(response.parsed_body.count).to eq(4)
+          expect(response.parsed_body.pluck(:id)).not_to include(old_apartment.id)
+        end
+      end
+
+      describe "with query_params for created_before", :query_param do
+        let(:query_params) { { created_before: 1.day.ago.iso8601 } }
+
+        it "returns only older apartments" do
+          expect(response.parsed_body.count).to eq(1)
+          expect(response.parsed_body.pluck(:id)).to include(old_apartment.id)
+        end
+      end
+
+      describe "with query_params for approveds only", :query_param do
+        let(:query_params) { { status: "approved" } }
+
+        it "displays only approveds if sent 'approved'" do
+          expect(response.parsed_body.count).to eq(4)
+          expect(response.parsed_body.pluck(:id)).not_to include(pending_apartment.id)
+        end
+      end
+
+      describe "with query_params for pending only", :query_param do
+        let(:query_params) { { status: "pending" } }
+
+        it "displays only pending if sent 'pending'" do
+          expect(response.parsed_body.count).to eq(1)
+          expect(response.parsed_body.pluck(:id)).to include(pending_apartment.id)
+        end
       end
     end
   end

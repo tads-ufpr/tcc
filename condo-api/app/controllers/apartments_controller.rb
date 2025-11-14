@@ -4,7 +4,19 @@ class ApartmentsController < ApplicationController
 
   # GET /condominia/:condominium_id/apartments
   def index
-    @apartments = Apartment.all
+    @apartments = @condominium.apartments
+
+    if params[:status].present?
+      @apartments = @apartments.where(status: params[:status])
+    end
+
+    if params[:created_after].present?
+      @apartments = @apartments.where("created_at >= ?", params[:created_after])
+    end
+
+    if params[:created_before].present?
+      @apartments = @apartments.where("created_at <= ?", params[:created_before])
+    end
 
     render json: @apartments
   end
