@@ -118,4 +118,57 @@ RSpec.describe "/apartments", type: :request do
       end
     end
   end
+
+  describe "PATCH /apartments/:id/approve" do
+    let!(:apartment) { create(:apartment, condominium: condo) }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      patch approve_apartment_url(apartment.id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated", :auth do
+      describe "as resident" do
+        let(:user) { condo.residents.first.user }
+
+        it "deny access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as colaborator" do
+        let(:user) { create(:employee, :colaborator, condominium: condo).user }
+
+        it "deny access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as manager" do
+        let(:user) { create(:employee, :manager, condominium: condo).user }
+
+        it "approves the apartment" do
+          expect(response).to have_http_status(:ok)
+          expect(apartment.reload.status).to eq("approved")
+        end
+      end
+
+      describe "as admin" do
+        let(:user) { create(:employee, :admin, condominium: condo).user }
+
+        it "approves the apartment" do
+          expect(response).to have_http_status(:ok)
+          expect(apartment.reload.status).to eq("approved")
+        end
+      end
+    end
+  end
 end

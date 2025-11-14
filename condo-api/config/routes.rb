@@ -15,6 +15,7 @@ Rails.application.routes.draw do
     resources :apartments, only: [:index, :create]
   end
   resources :apartments, only: [:show, :update, :destroy] do
+    patch :approve, on: :member
     resources :notices, only: [:index, :create]
   end
   resources :notices, only: [:show, :update, :destroy]

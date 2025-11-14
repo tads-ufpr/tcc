@@ -1,6 +1,7 @@
 class ApartmentsController < ApplicationController
   load_and_authorize_resource :condominium, only: [:index, :create]
   load_and_authorize_resource :apartment, through: :condominium, only: [:index, :create]
+  load_and_authorize_resource :apartment, only: [:show, :update, :destroy, :approve]
 
   # GET /condominia/:condominium_id/apartments
   def index
@@ -54,6 +55,14 @@ class ApartmentsController < ApplicationController
   # DELETE /apartments/1
   def destroy
     @apartment.destroy!
+  end
+
+  def approve
+    if @apartment.update(status: :approved)
+      render json: @apartment
+    else
+      render_errors(@apartment.errors, :unprocessable_content)
+    end
   end
 
   private
