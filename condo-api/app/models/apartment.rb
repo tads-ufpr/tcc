@@ -11,6 +11,9 @@ class Apartment < ApplicationRecord
   }, default: :pending
 
   validates :number, :floor, presence: true
+  validates :number,
+            uniqueness: { scope: [:floor, :tower, :condominium_id] },
+            if: :approved?
 
   scope :approveds, -> { where(status: :approved) }
   scope :pendings, -> { where(status: :pending) }
