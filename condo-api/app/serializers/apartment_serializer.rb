@@ -1,3 +1,5 @@
 class ApartmentSerializer < ActiveModel::Serializer
-  attributes :id, :floor, :number, :tower, :created_at, :updated_at
+  attributes :id, :floor, :number, :tower, :status, :created_at, :updated_at
+
+  has_many :residents
 end

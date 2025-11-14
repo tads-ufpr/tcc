@@ -1,9 +1,23 @@
 class ApartmentsController < ApplicationController
-  load_and_authorize_resource
+  load_and_authorize_resource :condominium, only: [:index, :create]
+  load_and_authorize_resource :apartment, through: :condominium, only: [:index, :create]
+  load_and_authorize_resource :apartment, only: [:show, :update, :destroy, :approve]
 
-  # GET /apartments
+  # GET /condominia/:condominium_id/apartments
   def index
-    @apartments = Apartment.all
+    @apartments = @condominium.apartments
+
+    if params[:status].present?
+      @apartments = @apartments.where(status: params[:status])
+    end
+
+    if params[:created_after].present?
+      @apartments = @apartments.where("created_at >= ?", params[:created_after])
+    end
+
+    if params[:created_before].present?
+      @apartments = @apartments.where("created_at <= ?", params[:created_before])
+    end
 
     render json: @apartments
   end
@@ -13,21 +27,26 @@ class ApartmentsController < ApplicationController
     render json: @apartment
   end
 
-  # POST /apartments
+  # POST /condominia/:condominium_id/apartments
   def create
     @apartment = Apartment.new(apartment_params)
 
-    if @apartment.save
-      render json: @apartment, status: :created, location: @apartment
-    else
-      render_errors(@apartment.errors, :unprocessable_content)
+    Apartment.transaction do
+      @condominium.apartments << @apartment
+      if @apartment.save
+        @apartment.residents << Resident.new(user: current_user)
+
+        render json: @apartment, status: :created, location: @apartment
+      else
+        render_error(@apartment.errors, :unprocessable_content)
+      end
     end
   end
 
   # PATCH/PUT /apartments/1
   def update
     if @apartment.update(apartment_params)
-      render json: @apartment
+      render json: @apartment, include: []
     else
       render_errors(@apartment.errors, :unprocessable_content)
     end
@@ -38,14 +57,17 @@ class ApartmentsController < ApplicationController
     @apartment.destroy!
   end
 
-  private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_apartment
-    @apartment = Apartment.find(params.expect(:id))
+  def approve
+    if @apartment.update(status: :approved)
+      render json: @apartment
+    else
+      render_errors(@apartment.errors, :unprocessable_content)
+    end
   end
 
+  private
   # Only allow a list of trusted parameters through.
   def apartment_params
-    params.expect(apartment: [ :floor, :door, :tower, :rented, :active ])
+    params.require(:apartment).permit([ :floor, :number, :tower ])
   end
 end

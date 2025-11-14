@@ -13,5 +13,9 @@ FactoryBot.define do
     trait :manager do
       role { :manager }
     end
+
+    trait :colaborator do
+      role { :colaborator }
+    end
   end
 end

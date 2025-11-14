@@ -16,7 +16,7 @@ FactoryBot.define do
 
     trait :with_apartments do
       after(:create) do |condominium, evaluator|
-        create(:apartment, condominium: condominium)
+        create(:apartment, :approved, condominium: condominium)
       end
     end
 
@@ -27,7 +27,7 @@ FactoryBot.define do
 
       after(:create) do |condominium, evaluator|
         evaluator.residents_count.times do
-          apartment = create(:apartment, condominium: condominium)
+          apartment = create(:apartment, :approved, condominium: condominium)
           create(:resident, apartment: apartment)
         end
       end

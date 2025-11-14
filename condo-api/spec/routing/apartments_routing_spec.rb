@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe ApartmentsController, type: :routing do
   describe "routing" do
     it "routes to #index" do
-      expect(get: "/apartments").to route_to("apartments#index")
+      expect(get: "condominia/1/apartments").to route_to("apartments#index", condominium_id: "1")
     end
 
     it "routes to #show" do
@@ -12,7 +12,7 @@ RSpec.describe ApartmentsController, type: :routing do
 
 
     it "routes to #create" do
-      expect(post: "/apartments").to route_to("apartments#create")
+      expect(post: "condominia/1/apartments").to route_to("apartments#create", condominium_id: "1")
     end
 
     it "routes to #update via PUT" do

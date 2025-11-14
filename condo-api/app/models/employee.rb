@@ -16,7 +16,7 @@ class Employee < ApplicationRecord
   validates :description, :condominium_id, :user_id, :role, presence: true
 
   scope :admins, -> { where(role: :admin) }
-  scope :managers, -> { where(role: :admin) }
+  scope :managers, -> { where(role: :manager) }
 
   def admin?
     self.role == :admin
