@@ -26,8 +26,8 @@ class Ability
     can :read, Apartment, condominium: { id: user.employees.pluck(:condominium_id) }
     can :approve, Apartment, condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) }
 
-    can :update, Apartment, residents: { user_id: user.id, owner: true }
-    can :update, Apartment, condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) }
+    can [:update, :destroy], Apartment, residents: { user_id: user.id, owner: true }
+    can [:update, :destroy], Apartment, condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) }
 
     # Only residents and employees are allowed to read a notice
     # Employee can read any notice
