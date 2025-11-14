@@ -171,4 +171,89 @@ RSpec.describe "/apartments", type: :request do
       end
     end
   end
+
+  describe "PATCH /apartments/:id" do
+    let!(:apartment) { create(:apartment, :with_residents, condominium: condo) }
+    let(:params) do
+      { apartment: { tower: "New Tower" } }
+    end
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      patch apartment_url(apartment.id), params: params.to_json, headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated", :auth do
+      describe "as a random user" do
+        let(:user) { create(:user) }
+
+        it "forbids access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as a resident of another apartment" do
+        let(:user) { condo.residents.first.user }
+
+        it "forbids access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as a non-owner resident of the apartment" do
+        let(:user) do
+          resident = create(:resident, apartment: apartment, owner: false)
+          resident.user
+        end
+
+        it "forbids access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as a resident of the apartment" do
+        let(:user) { apartment.residents.find_by(owner: true).user }
+
+        it "updates the apartment" do
+          expect(response).to have_http_status(:ok)
+          expect(apartment.reload.tower).to eq("New Tower")
+          expect(response.parsed_body).not_to have_key("residents")
+        end
+      end
+
+      describe "as a colaborator of the condo" do
+        let(:user) { create(:employee, :colaborator, condominium: condo).user }
+
+        it "forbids access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as a manager of the condo" do
+        let(:user) { create(:employee, :manager, condominium: condo).user }
+
+        it "forbids access" do
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+
+      describe "as an admin of the condo" do
+        let(:user) { create(:employee, :admin, condominium: condo).user }
+
+        it "updates the apartment" do
+          expect(response).to have_http_status(:ok)
+          expect(apartment.reload.tower).to eq("New Tower")
+          expect(response.parsed_body).not_to have_key("residents")
+        end
+      end
+    end
+  end
 end
