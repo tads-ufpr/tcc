@@ -144,20 +144,11 @@ RSpec.describe "/apartments", type: :request do
         end
       end
 
-      describe "as colaborator" do
-        let(:user) { create(:employee, :colaborator, condominium: condo).user }
+      describe "as collaborator" do
+        let(:user) { create(:employee, :collaborator, condominium: condo).user }
 
         it "deny access" do
           expect(response).to have_http_status(:forbidden)
-        end
-      end
-
-      describe "as manager" do
-        let(:user) { create(:employee, :manager, condominium: condo).user }
-
-        it "approves the apartment" do
-          expect(response).to have_http_status(:ok)
-          expect(apartment.reload.status).to eq("approved")
         end
       end
 
@@ -229,16 +220,8 @@ RSpec.describe "/apartments", type: :request do
         end
       end
 
-      describe "as a colaborator of the condo" do
-        let(:user) { create(:employee, :colaborator, condominium: condo).user }
-
-        it "forbids access" do
-          expect(response).to have_http_status(:forbidden)
-        end
-      end
-
-      describe "as a manager of the condo" do
-        let(:user) { create(:employee, :manager, condominium: condo).user }
+      describe "as a collaborator of the condo" do
+        let(:user) { create(:employee, :collaborator, condominium: condo).user }
 
         it "forbids access" do
           expect(response).to have_http_status(:forbidden)
@@ -309,16 +292,8 @@ RSpec.describe "/apartments", type: :request do
         end
       end
 
-      describe "as a colaborator of the condo" do
-        let(:user) { create(:employee, :colaborator, condominium: condo).user }
-
-        it "forbids access" do
-          expect(response).to have_http_status(:forbidden)
-        end
-      end
-
-      describe "as a manager of the condo" do
-        let(:user) { create(:employee, :manager, condominium: condo).user }
+      describe "as a collaborator of the condo" do
+        let(:user) { create(:employee, :collaborator, condominium: condo).user }
 
         it "forbids access" do
           expect(response).to have_http_status(:forbidden)

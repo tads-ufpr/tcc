@@ -7,53 +7,182 @@ class Ability
     # ################# #
     # GUEST PERMISSIONS #
     # ################# #
-    can :read, Condominium
-    can :create, User
+    guest_permissions
 
     return unless user.present?
 
-    # Any user can create a new Condominium, this will create an Employee(:admin)
-    # So only Employees(:admins) can manage the Condominium
+    # ##################### #
+    # AUTHENTICATED PERMISSIONS #
+    # ##################### #
+    authenticated_permissions(user)
+
+    # ################## #
+    # ROLE-BASED PERMISSIONS #
+    # ################## #
+    apply_employee_permissions(user)
+    apply_resident_permissions(user)
+  end
+
+  private
+
+  # ============ GUEST & AUTHENTICATED ============
+
+  def guest_permissions
+    can :read, Condominium
+    can :create, User
+  end
+
+  def authenticated_permissions(user)
+    can :show, User, id: user.id
     can :create, Condominium
-    can :manage, Condominium, employees: { user_id: user.id, role: "admin" }
-
-    can :read_notices, Condominium, id: user.employees.pluck(:condominium_id)
-    can :read_notices, Apartment, residents: { user_id: user.id }
-    can :read_notices, Apartment, condominium_id: user.employees.pluck(:condominium_id)
     can :create, Apartment
+  end
 
-    can :read, Apartment, condominium: { id: user.related_condominia_ids }
-    can :read, Apartment, condominium: { id: user.employees.pluck(:condominium_id) }
-    can :approve, Apartment, condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) }
+  # ============ EMPLOYEE ROLES ============
 
-    can [:update, :destroy], Apartment, residents: { user_id: user.id, owner: true }
-    can [:update, :destroy], Apartment, condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) }
+  def apply_employee_permissions(user)
+    return unless user.employees.any?
 
-    # Only residents and employees are allowed to read a notice
-    # Employee can read any notice
-    # Residente can only read it's Apartment notices
-    can :read, Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
-    can :read, Notice, apartment: { id: user.apartments.pluck(:id) }
+    admin_condo_ids = user.employees.where(role: :admin).pluck(:condominium_id)
+    collaborator_condo_ids = user.employees.where(role: :collaborator).pluck(:condominium_id)
 
-    # :admins only can interact with Employee
-    can [:create, :read, :update], Employee, condominium: { id: user.employees.admins.pluck(:condominium_id) }
-    # User can only delete an Employee if himself is :admin
-    # and if he is not trying to delete himself
+    admin_permissions(user, admin_condo_ids) if admin_condo_ids.any?
+    collaborator_permissions(user, collaborator_condo_ids) if collaborator_condo_ids.any?
+    employee_common_permissions(user)
+  end
+
+  def admin_permissions(user, admin_condo_ids)
+    admin_condominium_rules(user, admin_condo_ids)
+    admin_apartment_rules(user, admin_condo_ids)
+    admin_notice_rules(user, admin_condo_ids)
+    admin_employee_rules(user, admin_condo_ids)
+    admin_resident_rules(user, admin_condo_ids)
+  end
+
+  def admin_condominium_rules(user, admin_condo_ids)
+    can :manage, Condominium, id: admin_condo_ids
+  end
+
+  def admin_apartment_rules(user, admin_condo_ids)
+    can [:read, :update, :destroy, :approve], Apartment, condominium_id: admin_condo_ids
+  end
+
+  def admin_notice_rules(user, admin_condo_ids)
+    can [:create, :read, :update, :destroy], Notice, apartment: { condominium_id: admin_condo_ids }
+  end
+
+  def admin_employee_rules(user, admin_condo_ids)
+    # CRUD operations (admin only)
+    can [:create, :read, :update], Employee, condominium_id: admin_condo_ids
+
+    # Destroy with custom logic: admin only, cannot delete self
     can :destroy, Employee do |employee_to_destroy|
-      related_condo_emp = user.employees.admins.pluck(:condominium_id).include?(employee_to_destroy.condominium_id)
-
-      is_not_self = (employee_to_destroy.user_id != user.id)
-
-      related_condo_emp && is_not_self
+      admin_condo_ids.include?(employee_to_destroy.condominium_id) &&
+        employee_to_destroy.user_id != user.id
     end
-    # Any resident or employee can request for employee's #index
-    can :read_employees, Condominium, id: user.related_condominia_ids
+  end
 
-    # TO DO - remove the ability to destroy a Notice. It should be closed instead
-    can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
+  def admin_resident_rules(user, admin_condo_ids)
+    can :manage, Resident, apartment: { condominium_id: admin_condo_ids }
+  end
 
-    can :manage, Resident, apartment: { residents: { user_id: user.id, owner: true } }
-    can :manage, Resident, apartment: { condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) } }
-    can :destroy, Resident, user_id: user.id # Allow a resident to destroy themselves
+  def collaborator_permissions(user, collaborator_condo_ids)
+    collaborator_apartment_rules(user, collaborator_condo_ids)
+    collaborator_notice_rules(user, collaborator_condo_ids)
+  end
+
+  def collaborator_apartment_rules(user, collaborator_condo_ids)
+    can :read, Apartment, condominium_id: collaborator_condo_ids
+  end
+
+  def collaborator_notice_rules(user, collaborator_condo_ids)
+    can [:create, :read, :update, :destroy], Notice, apartment: { condominium_id: collaborator_condo_ids }
+  end
+
+  def employee_common_permissions(user)
+    employee_condo_ids = user.employees.pluck(:condominium_id)
+
+    employee_condominium_rules(user, employee_condo_ids)
+    employee_read_rules(user, employee_condo_ids)
+  end
+
+  def employee_condominium_rules(user, employee_condo_ids)
+    can :read_notices, Condominium, id: employee_condo_ids
+    can :read_employees, Condominium, id: employee_condo_ids
+  end
+
+  def employee_read_rules(user, employee_condo_ids)
+    can :read_notices, Apartment, condominium_id: employee_condo_ids
+  end
+
+  # ============ RESIDENT ROLES ============
+
+  def apply_resident_permissions(user)
+    return unless user.residents.any?
+
+    owner_apartment_ids = user.apartments.joins(:residents)
+                              .where(residents: { user_id: user.id, owner: true })
+                              .pluck(:id)
+
+    non_owner_apartment_ids = user.apartments.joins(:residents)
+                                  .where(residents: { user_id: user.id, owner: false })
+                                  .pluck(:id)
+
+    owner_permissions(user, owner_apartment_ids) if owner_apartment_ids.any?
+    resident_permissions(user, non_owner_apartment_ids) if non_owner_apartment_ids.any?
+    resident_common_permissions(user)
+  end
+
+  def owner_permissions(user, owner_apartment_ids)
+    owner_apartment_rules(user, owner_apartment_ids)
+    owner_resident_rules(user, owner_apartment_ids)
+    owner_notice_rules(user, owner_apartment_ids)
+  end
+
+  def owner_apartment_rules(user, owner_apartment_ids)
+    can [:update, :destroy], Apartment, id: owner_apartment_ids
+  end
+
+  def owner_resident_rules(user, owner_apartment_ids)
+    can :manage, Resident, apartment_id: owner_apartment_ids
+  end
+
+  def owner_notice_rules(user, owner_apartment_ids)
+    can :read, Notice, apartment_id: owner_apartment_ids
+  end
+
+  def resident_permissions(user, non_owner_apartment_ids)
+    resident_notice_rules(user, non_owner_apartment_ids)
+  end
+
+  def resident_notice_rules(user, non_owner_apartment_ids)
+    # Residents can ONLY read notices, nothing else
+    can :read, Notice, apartment_id: non_owner_apartment_ids
+  end
+
+  def resident_common_permissions(user)
+    resident_condo_ids = user.apartments.pluck(:condominium_id).uniq
+    resident_apartment_ids = user.apartments.pluck(:id)
+
+    resident_apartment_read_rules(user, resident_apartment_ids)
+    resident_condominium_rules(user, resident_condo_ids)
+    resident_notice_read_rules(user, resident_condo_ids, resident_apartment_ids)
+    resident_self_rules(user)
+  end
+
+  def resident_apartment_read_rules(user, resident_apartment_ids)
+    can :read, Apartment, id: resident_apartment_ids
+  end
+
+  def resident_condominium_rules(user, resident_condo_ids)
+    can :read_employees, Condominium, id: resident_condo_ids
+  end
+
+  def resident_notice_read_rules(user, resident_condo_ids, resident_apartment_ids)
+    can :read_notices, Apartment, id: resident_apartment_ids
+  end
+
+  def resident_self_rules(user)
+    can :destroy, Resident, user_id: user.id
   end
 end

@@ -3,7 +3,7 @@ class CreateEmployees < ActiveRecord::Migration[8.0]
     create_table :employees do |t|
       t.references :user, null: false, foreign_key: true
       t.references :condominium, null: false, foreign_key: true
-      t.string :role, null: false, default: "colaborator"
+      t.string :role, null: false, default: "collaborator"
       t.string :description
 
       t.timestamps
