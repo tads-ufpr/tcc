@@ -259,15 +259,12 @@ RSpec.describe "/apartments", type: :request do
 
   describe "DELETE /apartments/:id" do
     let!(:apartment) { create(:apartment, :with_residents, condominium: condo) }
-    let(:params) do
-      { apartment: { tower: "New Tower" } }
-    end
 
     before do |test|
       headers = json_headers
       headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
 
-      delete apartment_url(apartment.id), params: params.to_json, headers:
+      delete apartment_url(apartment.id), headers:
     end
 
     describe "when unauthenticated" do
@@ -334,6 +331,67 @@ RSpec.describe "/apartments", type: :request do
         it "updates the apartment" do
           expect(response).to have_http_status(:success)
         end
+      end
+    end
+  end
+
+  describe "GET /apartments/:apartment_id" do
+    let!(:apartment) { create(:apartment, :with_residents, condominium: condo) }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      get apartment_url(apartment.id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "returns unauthorized" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated as Employee", :auth do
+      let(:user) { condo.employees.first.user }
+
+      it "succeed" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays the residents" do
+        expect(response.parsed_body).to have_key("status")
+        expect(response.parsed_body).to have_key("residents")
+      end
+    end
+
+    describe "when authenticated as unrelated user", :auth do
+      let(:user) { create(:user) }
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as non-owner resident", :auth do
+      let(:user) do
+        user = create(:user)
+        create(:resident, apartment: apartment, user: user)
+        user
+      end
+
+      it "allows access" do
+        expect(response).to have_http_status(:success)
+      end
+    end
+
+    describe "when authenticated as unrelated administrator", :auth do
+      let(:user) do
+        condo = create(:condominium, :with_staff)
+        condo.employees.first.user
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
       end
     end
   end
