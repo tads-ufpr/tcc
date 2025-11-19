@@ -3,8 +3,8 @@ class Employee < ApplicationRecord
 
   enum :role, {
     admin: "admin",
-    colaborator: "colaborator"
-  }, default: :colaborator
+    collaborator: "collaborator"
+  }, default: :collaborator
 
   belongs_to :user
   belongs_to :condominium
