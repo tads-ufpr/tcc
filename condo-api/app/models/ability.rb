@@ -51,5 +51,9 @@ class Ability
 
     # TO DO - remove the ability to destroy a Notice. It should be closed instead
     can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
+
+    can :manage, Resident, apartment: { residents: { user_id: user.id, owner: true } }
+    can :manage, Resident, apartment: { condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) } }
+    can :destroy, Resident, user_id: user.id # Allow a resident to destroy themselves
   end
 end
