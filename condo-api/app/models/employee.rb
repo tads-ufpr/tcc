@@ -3,7 +3,6 @@ class Employee < ApplicationRecord
 
   enum :role, {
     admin: "admin",
-    manager: "manager",
     colaborator: "colaborator"
   }, default: :colaborator
 
@@ -16,7 +15,6 @@ class Employee < ApplicationRecord
   validates :description, :condominium_id, :user_id, :role, presence: true
 
   scope :admins, -> { where(role: :admin) }
-  scope :managers, -> { where(role: :manager) }
 
   def admin?
     self.role == :admin

@@ -15,7 +15,7 @@ class Ability
     # Any user can create a new Condominium, this will create an Employee(:admin)
     # So only Employees(:admins) can manage the Condominium
     can :create, Condominium
-    can :manage, Condominium, employees: { user_id: user.id, role: "admin" }
+    can :manage, Condominium, employees: { user_id: user.id, role: :admin }
 
     can :read_notices, Condominium, id: user.employees.pluck(:condominium_id)
     can :read_notices, Apartment, residents: { user_id: user.id }
@@ -24,7 +24,7 @@ class Ability
 
     can :read, Apartment, condominium: { id: user.related_condominia_ids }
     can :read, Apartment, condominium: { id: user.employees.pluck(:condominium_id) }
-    can :approve, Apartment, condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) }
+    can :approve, Apartment, condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) }
 
     can [:update, :destroy], Apartment, residents: { user_id: user.id, owner: true }
     can [:update, :destroy], Apartment, condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) }
@@ -53,7 +53,7 @@ class Ability
     can [:create, :update, :destroy], Notice, apartment: { condominium: { id: user.employees.pluck(:condominium_id) } }
 
     can :manage, Resident, apartment: { residents: { user_id: user.id, owner: true } }
-    can :manage, Resident, apartment: { condominium: { id: user.employees.where(role: [:admin, :manager]).pluck(:condominium_id) } }
+    can :manage, Resident, apartment: { condominium: { id: user.employees.where(role: :admin).pluck(:condominium_id) } }
     can :destroy, Resident, user_id: user.id # Allow a resident to destroy themselves
   end
 end
