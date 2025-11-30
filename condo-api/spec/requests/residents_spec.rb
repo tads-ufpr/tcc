@@ -7,6 +7,8 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
   let!(:condo) { create(:condominium, :with_staff, :with_residents, residents_count: 3) }
   let(:ap) { condo.apartments.first }
 
+
+
   describe "POST /apartments/:apartment_id/residents" do
     let(:params) do
       u = FactoryBot.create(:user)
