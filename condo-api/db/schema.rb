@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_09_000128) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
   create_table "apartments", force: :cascade do |t|
     t.integer "condominium_id", null: false
     t.integer "floor", null: false
@@ -45,6 +45,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_000128) do
     t.index ["condominium_id"], name: "index_employees_on_condominium_id"
     t.index ["user_id", "condominium_id"], name: "index_employees_on_user_id_and_condominium_id", unique: true
     t.index ["user_id"], name: "index_employees_on_user_id"
+  end
+
+  create_table "facilities", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.integer "tax"
+    t.integer "condominium_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["condominium_id"], name: "index_facilities_on_condominium_id"
   end
 
   create_table "notices", force: :cascade do |t|
@@ -94,6 +104,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_000128) do
   add_foreign_key "apartments", "condominia"
   add_foreign_key "employees", "condominia"
   add_foreign_key "employees", "users"
+  add_foreign_key "facilities", "condominia"
   add_foreign_key "notices", "apartments"
   add_foreign_key "notices", "users", column: "creator_id"
   add_foreign_key "residents", "apartments"
