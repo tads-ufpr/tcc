@@ -3,6 +3,8 @@ class EmployeesController < ApplicationController
   load_and_authorize_resource :employee, through: :condominium, only: [:create]
   load_and_authorize_resource :employee, only: [:show, :update, :destroy]
 
+  wrap_parameters :employee, include: [:user_id, :description, :role]
+
   def index
     authorize! :read_employees, @condominium
 
