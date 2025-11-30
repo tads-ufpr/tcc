@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :facilities
   defaults format: :json do
     devise_for :users, path: "user", path_names: {
       sign_in: "login",
