@@ -207,4 +207,72 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
       end
     end
   end
+
+  describe "GET /residents/:id" do
+    let!(:resident_to_show) { create(:resident, apartment: ap) }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      get apartment_resident_url(ap.id, resident_to_show.id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "deny access" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated as unrelated employee", :auth do
+      let(:user) do
+        condo_2 = create(:condominium, :with_staff)
+        condo_2.employees.first.user
+      end
+
+      it "deny access" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as any resident from the same condo", :auth do
+      let(:user) { ap.residents.second.user }
+
+      it "succeeds" do
+        expect(response).to have_http_status(:success)
+
+        parsed_body = response.parsed_body
+
+        expect(parsed_body["id"]).to eq(resident_to_show.id)
+        expect(parsed_body["apartment_id"]).to eq(resident_to_show.apartment_id)
+        expect(parsed_body["owner"]).to eq(resident_to_show.owner)
+        expect(parsed_body["created_at"]).to be_present
+        expect(parsed_body["updated_at"]).to be_present
+
+        user_data = parsed_body["user"]
+        expect(user_data["id"]).to eq(resident_to_show.user.id)
+        expect(user_data["name"]).to eq(resident_to_show.user.name)
+      end
+    end
+
+    describe "when authenticated as condominum's employee", :auth do
+      let(:user) { condo.employees.first.user }
+
+      it "succeeds" do
+        expect(response).to have_http_status(:success)
+
+        parsed_body = response.parsed_body
+
+        expect(parsed_body["id"]).to eq(resident_to_show.id)
+        expect(parsed_body["apartment_id"]).to eq(resident_to_show.apartment_id)
+        expect(parsed_body["owner"]).to eq(resident_to_show.owner)
+        expect(parsed_body["created_at"]).to be_present
+        expect(parsed_body["updated_at"]).to be_present
+
+        user_data = parsed_body["user"]
+        expect(user_data["id"]).to eq(resident_to_show.user.id)
+        expect(user_data["name"]).to eq(resident_to_show.user.name)
+      end
+    end
+  end
 end
