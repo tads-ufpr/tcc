@@ -104,6 +104,7 @@ class Ability
 
     employee_condominium_rules(user, employee_condo_ids)
     employee_read_rules(user, employee_condo_ids)
+    employee_resident_rules(user, employee_condo_ids)
   end
 
   def employee_condominium_rules(user, employee_condo_ids)
@@ -113,6 +114,14 @@ class Ability
 
   def employee_read_rules(user, employee_condo_ids)
     can :read_notices, Apartment, condominium_id: employee_condo_ids
+  end
+
+  def employee_resident_rules(user, employee_condo_ids)
+    can :read, Resident, apartment: { condominium_id: employee_condo_ids }
+  end
+
+  def employee_resident_rules(user, employee_condo_ids)
+    can :read, Resident, apartment: { condominium_id: employee_condo_ids }
   end
 
   # ============ RESIDENT ROLES ============
@@ -168,6 +177,7 @@ class Ability
     resident_condominium_rules(user, resident_condo_ids)
     resident_notice_read_rules(user, resident_condo_ids, resident_apartment_ids)
     resident_self_rules(user)
+    resident_resident_rules(user, resident_condo_ids)
   end
 
   def resident_apartment_read_rules(user, resident_apartment_ids)
@@ -184,5 +194,9 @@ class Ability
 
   def resident_self_rules(user)
     can :destroy, Resident, user_id: user.id
+  end
+
+  def resident_resident_rules(user, resident_condo_ids)
+    can :read, Resident, apartment: { condominium_id: resident_condo_ids }
   end
 end

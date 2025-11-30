@@ -1,6 +1,11 @@
 class ResidentsController < ApplicationController
-  load_and_authorize_resource :apartment
-  load_and_authorize_resource :resident, through: :apartment, shallow: true
+  load_and_authorize_resource :apartment, only: [:create, :update, :destroy] # This was already there
+  load_and_authorize_resource :resident, through: :apartment, shallow: true, only: [:create, :update, :destroy]
+  load_and_authorize_resource :resident, only: [:show]
+
+  def show
+    render json: @resident, serializer: ResidentShowSerializer
+  end
 
   # POST /apartments/:apartment_id/residents
   def create

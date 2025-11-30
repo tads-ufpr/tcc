@@ -24,6 +24,7 @@ Rails.application.routes.draw do
       resources :notices, only: [:index, :create]
       resources :residents, only: [:create, :update, :destroy]
     end
+    resources :residents, only: [:show]
     resources :notices, only: [:show, :update, :destroy]
     resources :users, only: [:show, :update, :create]
     resources :employees, only: [:show, :update, :destroy]
