@@ -20,6 +20,10 @@ class ResidentsController < ApplicationController
     end
   end
 
+  def show
+    render json: @resident, serializer: ResidentShowSerializer
+  end
+
   # DELETE /residents/:id
   def destroy
     @resident.destroy
