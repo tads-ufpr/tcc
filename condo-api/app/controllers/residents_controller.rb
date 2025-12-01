@@ -1,8 +1,15 @@
 class ResidentsController < ApplicationController
-  load_and_authorize_resource :apartment, only: [:create, :update, :destroy] # This was already there
-  load_and_authorize_resource :resident, through: :apartment, shallow: true, only: [:create, :update, :destroy]
-  load_and_authorize_resource :resident, only: [:show]
+  load_and_authorize_resource :apartment, only: [:index, :create]
+  load_and_authorize_resource :resident, through: :apartment, shallow: true, only: [:index, :create]
+  load_and_authorize_resource :resident, only: [:show, :update, :destroy]
 
+
+  # GET /apartments/:apartment_id/residents
+  def index
+    render json: @residents, each_serializer: ResidentSerializer
+  end
+
+  # GET /residents/:id
   def show
     render json: @resident, serializer: ResidentShowSerializer
   end
