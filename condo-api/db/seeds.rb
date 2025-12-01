@@ -54,3 +54,10 @@ Notice.create({
   description: Faker::Lorem.sentence,
   title: Faker::Lorem.word
 })
+
+Facility.create({
+  condominium_id: Condominium.first.id,
+  name: "Piscina",
+  description: "Piscina do condomínio, apenas para moradores.",
+  tax: 0
+})
