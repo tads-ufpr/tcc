@@ -2,6 +2,7 @@ class Condominium < ApplicationRecord
   has_many :employees, dependent: :destroy
   has_many :apartments, dependent: :destroy
   has_many :residents, through: :apartments
+  has_many :facilities, dependent: :destroy
 
   validates :city, :state, :address, presence: true
   validates :neighborhood, :zipcode, :number, presence: true
