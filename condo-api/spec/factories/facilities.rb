@@ -1,8 +1,9 @@
 FactoryBot.define do
   factory :facility do
-    name { "MyString" }
-    description { "MyString" }
-    tax { 1 }
-    condominium { nil }
+    name { Faker::FunnyName.name }
+    description { Faker::FunnyName.two_word_name }
+    tax { 200 }
+
+    association :condominium
   end
 end
