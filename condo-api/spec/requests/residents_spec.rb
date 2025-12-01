@@ -7,7 +7,156 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
   let!(:condo) { create(:condominium, :with_staff, :with_residents, residents_count: 3) }
   let(:ap) { condo.apartments.first }
 
+  describe "GET /apartments/:apartment_id/residents" do
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
 
+      get apartment_residents_url(ap.id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "returns unauthorized" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated as an unrelated user", :auth do
+      let(:user) { create(:user) }
+
+      it "returns forbidden" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as a resident of another condominium", :auth do
+      let(:user) do
+        other_condo = create(:condominium, :with_residents)
+        other_condo.residents.first.user
+      end
+
+      it "returns forbidden" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as a resident of another apartment in the same condo", :auth do
+      let(:user) { condo.residents.second.user }
+
+      it "returns forbidden" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as a resident of the apartment", :auth do
+      let(:user) { ap.residents.first.user }
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body.size).to eq(ap.residents.count)
+      end
+    end
+
+    describe "when authenticated as a collaborator of the condominium", :auth do
+      let(:user) do
+        create(:employee, :collaborator, condominium: condo).user
+      end
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body.size).to eq(ap.residents.count)
+      end
+    end
+
+    describe "when authenticated as an admin of the condominium", :auth do
+      let(:user) do
+        admin = condo.employees.find_by(role: :admin)
+        admin.user
+      end
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body.size).to eq(ap.residents.count)
+      end
+    end
+  end
+
+  describe "GET /residents/:id" do
+    let(:resident_to_show) { ap.residents.first }
+
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      get resident_url(resident_to_show.id), headers:
+    end
+
+    describe "when unauthenticated" do
+      it "returns unauthorized" do
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    describe "when authenticated as an unrelated user", :auth do
+      let(:user) { create(:user) }
+
+      it "returns forbidden" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as a resident of another condominium", :auth do
+      let(:user) do
+        other_condo = create(:condominium, :with_residents)
+        other_condo.residents.first.user
+      end
+
+      it "returns forbidden" do
+        expect(response).to have_http_status(:forbidden)
+      end
+    end
+
+    describe "when authenticated as a resident of another apartment in the same condo", :auth do
+      let(:user) { condo.residents.second.user }
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body["id"]).to eq(resident_to_show.id)
+      end
+    end
+
+    describe "when authenticated as the resident being shown", :auth do
+      let(:user) { resident_to_show.user }
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body["id"]).to eq(resident_to_show.id)
+      end
+    end
+
+    describe "when authenticated as a collaborator of the condominium", :auth do
+      let(:user) do
+        create(:employee, :collaborator, condominium: condo).user
+      end
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body["id"]).to eq(resident_to_show.id)
+      end
+    end
+
+    describe "when authenticated as an admin of the condominium", :auth do
+      let(:user) do
+        admin = condo.employees.find_by(role: :admin)
+        admin.user
+      end
+
+      it "returns success" do
+        expect(response).to have_http_status(:success)
+        expect(response.parsed_body["id"]).to eq(resident_to_show.id)
+      end
+    end
+  end
 
   describe "POST /apartments/:apartment_id/residents" do
     let(:params) do
