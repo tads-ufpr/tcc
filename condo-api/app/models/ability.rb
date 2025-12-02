@@ -58,6 +58,7 @@ class Ability
     admin_employee_rules(user, admin_condo_ids)
     admin_resident_rules(user, admin_condo_ids)
     admin_facility_rules(user, admin_condo_ids)
+    admin_reservation_rules(user, admin_condo_ids)
   end
 
   def admin_condominium_rules(user, admin_condo_ids)
@@ -91,10 +92,15 @@ class Ability
     can :manage, Facility, condominium_id: admin_condo_ids
   end
 
+  def admin_reservation_rules(_user, admin_condo_ids)
+    can :manage, Reservation, facility: { condominium_id: admin_condo_ids }
+  end
+
   def collaborator_permissions(user, collaborator_condo_ids)
     collaborator_apartment_rules(user, collaborator_condo_ids)
     collaborator_notice_rules(user, collaborator_condo_ids)
     collaborator_facility_rules(user, collaborator_condo_ids)
+    collaborator_reservation_rules(user, collaborator_condo_ids)
   end
 
   def collaborator_apartment_rules(user, collaborator_condo_ids)
@@ -107,6 +113,10 @@ class Ability
 
   def collaborator_facility_rules(_user, collaborator_condo_ids)
     can :read, Facility, condominium_id: collaborator_condo_ids
+  end
+
+  def collaborator_reservation_rules(_user, collaborator_condo_ids)
+    can :read, Reservation, facility: { condominium_id: collaborator_condo_ids }
   end
 
   def employee_common_permissions(user)
@@ -189,6 +199,7 @@ class Ability
     resident_self_rules(user)
     resident_resident_rules(user, resident_condo_ids)
     resident_facility_rules(user, resident_condo_ids)
+    resident_reservation_rules(user, resident_condo_ids)
   end
 
   def resident_apartment_read_rules(user, resident_apartment_ids)
@@ -213,5 +224,11 @@ class Ability
 
   def resident_facility_rules(_user, resident_condo_ids)
     can :read, Facility, condominium_id: resident_condo_ids
+  end
+
+  def resident_reservation_rules(user, resident_condo_ids)
+    can :create, Reservation, facility: { condominium_id: resident_condo_ids }, apartment_id: user.apartment_ids
+    can :read, Reservation, facility: { condominium_id: resident_condo_ids }
+    can :destroy, Reservation, creator_id: user.id, facility: { condominium_id: resident_condo_ids }
   end
 end

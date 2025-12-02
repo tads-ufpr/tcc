@@ -95,6 +95,9 @@ class Users::PermissionsController < ApplicationController
       readResident
       updateResident
       destroyResident
+      createReservation
+      readReservation
+      destroyReservation
     ]
   end
 
@@ -111,6 +114,7 @@ class Users::PermissionsController < ApplicationController
       readNotice
       updateNotice
       destroyNotice
+      readReservation
     ]
   end
 
@@ -130,6 +134,9 @@ class Users::PermissionsController < ApplicationController
       destroyResident
       readNotice
       destroyResident
+      createReservation
+      readReservation
+      destroyReservation
     ]
   end
 
@@ -143,6 +150,9 @@ class Users::PermissionsController < ApplicationController
       readApartment
       readNotice
       destroyResident
+      createReservation
+      readReservation
+      destroyReservation
     ]
   end
 end
