@@ -19,7 +19,7 @@ class ResidentsController < ApplicationController
     if @resident.save
       render json: @resident, serializer: ResidentSerializer, status: :created
     else
-      render json: @resident.errors, status: :unprocessable_entity
+      render_error(@resident.errors, :unprocessable_content)
     end
   end
 
@@ -28,7 +28,7 @@ class ResidentsController < ApplicationController
     if @resident.update(resident_params)
       render json: @resident, serializer: ResidentSerializer
     else
-      render json: @resident.errors, status: :unprocessable_entity
+      render_error(@resident.errors, :unprocessable_content)
     end
   end
 

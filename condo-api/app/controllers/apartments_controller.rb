@@ -48,7 +48,7 @@ class ApartmentsController < ApplicationController
     if @apartment.update(apartment_params)
       render json: @apartment, include: []
     else
-      render_errors(@apartment.errors, :unprocessable_content)
+      render_error(@apartment.errors, :unprocessable_content)
     end
   end
 
@@ -61,7 +61,7 @@ class ApartmentsController < ApplicationController
     if @apartment.update(status: :approved)
       render json: @apartment
     else
-      render_errors(@apartment.errors, :unprocessable_content)
+      render_error(@apartment.errors, :unprocessable_content)
     end
   end
 

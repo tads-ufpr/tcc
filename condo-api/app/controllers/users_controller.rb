@@ -19,7 +19,7 @@ class UsersController < ApplicationController
 
       render :created, status: :created
     else
-      render json: { errors: @user.errors }, status: :unprocessable_content
+      render_error(@user.errors, :unprocessable_content)
     end
   end
 

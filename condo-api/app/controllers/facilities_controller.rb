@@ -14,7 +14,7 @@ class FacilitiesController < ApplicationController
     if @facility.save
       render json: @facility, status: :created, location: @facility
     else
-      render json: @facility.errors, status: :unprocessable_entity
+      render_error(@facility.errors, :unprocessable_content)
     end
   end
 
@@ -22,7 +22,7 @@ class FacilitiesController < ApplicationController
     if @facility.update(facility_params)
       render json: @facility
     else
-      render json: @facility.errors, status: :unprocessable_entity
+      render_error(@facility.errors, :unprocessable_content)
     end
   end
 
