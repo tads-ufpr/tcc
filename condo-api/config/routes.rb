@@ -30,7 +30,7 @@ Rails.application.routes.draw do
     resources :users, only: [:show, :update, :create]
     resources :employees, only: [:show, :update, :destroy]
     resources :facilities, only: [:show, :update, :destroy] do
-      resources :reservations, only: [:create]
+      resources :reservations, only: [:create, :index]
     end
   end
   get "up" => "rails/health#show", as: :rails_health_check

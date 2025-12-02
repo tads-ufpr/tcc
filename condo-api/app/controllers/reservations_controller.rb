@@ -2,6 +2,16 @@ class ReservationsController < ApplicationController
   load_and_authorize_resource :facility
   load_and_authorize_resource :reservation, through: :facility
 
+  def index
+    reservations = if params[:until].present?
+      @reservations.where("scheduled_date > ? AND scheduled_date < ?", params[:until].to_date, Date.today).order(scheduled_date: :desc)
+    else
+      @reservations.where("scheduled_date >= ?", Date.today).order(scheduled_date: :asc)
+    end
+
+    render json: reservations
+  end
+
   def create
     @reservation.creator = current_user
     if @reservation.save
