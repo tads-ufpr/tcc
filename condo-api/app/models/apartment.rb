@@ -4,6 +4,7 @@ class Apartment < ApplicationRecord
   has_many :residents, dependent: :destroy
   has_many :users, through: :residents
   has_many :notices, dependent: :destroy
+  has_many :reservations, dependent: :destroy
 
   enum :status, {
     pending: 0,
