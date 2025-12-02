@@ -9,16 +9,18 @@ class Reservation < ApplicationRecord
   validate :scheduled_date_is_valid, on: :create
   validate :apartment_pending_reservations_limit, on: :create
 
+  before_destroy :prevent_destruction_of_past_reservation
+
   private
 
   def scheduled_date_is_valid
     return if scheduled_date.blank?
 
-    if scheduled_date < Date.today
+    if scheduled_date < Date.current
       errors.add(:scheduled_date, "can't be in the past")
     end
 
-    if scheduled_date > Date.today + 2.months
+    if scheduled_date > Date.current + 2.months
       errors.add(:scheduled_date, "can't be more than 2 months in the future")
     end
   end
@@ -26,7 +28,7 @@ class Reservation < ApplicationRecord
   def apartment_pending_reservations_limit
     return if apartment.blank?
 
-    if apartment.reservations.where('scheduled_date >= ?', Date.today).count >= 2
+    if apartment.reservations.where('scheduled_date >= ?', Date.current).count >= 2
       errors.add(:apartment, 'has reached the limit of pending reservations')
     end
   end
@@ -37,5 +39,12 @@ class Reservation < ApplicationRecord
     unless apartment.users.include?(creator)
       errors.add(:creator, 'must be a resident of the apartment')
     end
+  end
+
+  def prevent_destruction_of_past_reservation
+    return unless scheduled_date < Date.current
+
+    errors.add(:base, "Cannot delete a reservation in the past")
+    throw :abort
   end
 end

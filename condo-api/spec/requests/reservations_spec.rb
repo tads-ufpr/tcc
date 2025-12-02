@@ -62,7 +62,8 @@ RSpec.describe "/reservations", type: :request do
           it "returns unprocessable_content" do
             post url, params: invalid_params_without_apartment.to_json, headers: headers
             expect(response).to have_http_status(:unprocessable_content)
-            expect(response.parsed_body["apartment"]).to include("can't be blank", "must be a resident of the apartment")
+            expect(response.parsed_body["message"]).to include("apartment must exist;")
+            expect(response.parsed_body["message"]).to include("apartment can't be blank;")
           end
         end
 
@@ -75,7 +76,7 @@ RSpec.describe "/reservations", type: :request do
 
           it "returns unprocessable_content" do
             expect(response).to have_http_status(:unprocessable_content)
-            expect(response.parsed_body["apartment"]).to include("has reached the limit of pending reservations")
+            expect(response.parsed_body["message"]).to include("apartment has reached the limit of pending reservations;")
           end
         end
 

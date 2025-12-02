@@ -1,6 +1,7 @@
 class ReservationsController < ApplicationController
-  load_and_authorize_resource :facility
-  load_and_authorize_resource :reservation, through: :facility
+  load_and_authorize_resource :facility, only: [:index, :create]
+  load_and_authorize_resource :reservation, through: :facility, only: [:index, :create]
+  load_and_authorize_resource :reservation, only: [:destroy]
 
   def index
     reservations = if params[:until].present?
@@ -17,7 +18,15 @@ class ReservationsController < ApplicationController
     if @reservation.save
       render json: @reservation, status: :created
     else
-      render json: @reservation.errors, status: :unprocessable_entity
+      render_error(@reservation.errors, :unprocessable_content)
+    end
+  end
+
+  def destroy
+    if @reservation.destroy
+      head :no_content
+    else
+      render_error(@reservation.errors, :unprocessable_content)
     end
   end
 
