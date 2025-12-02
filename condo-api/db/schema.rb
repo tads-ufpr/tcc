@@ -50,7 +50,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_02_175620) do
   create_table "facilities", force: :cascade do |t|
     t.string "name"
     t.string "description"
-    t.integer "tax"
+    t.integer "tax", default: 0, null: false
     t.integer "condominium_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
