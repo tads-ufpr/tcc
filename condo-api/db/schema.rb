@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_02_175620) do
   create_table "apartments", force: :cascade do |t|
     t.integer "condominium_id", null: false
     t.integer "floor", null: false
@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
     t.integer "condominium_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "schedulable", default: false, null: false
     t.index ["condominium_id"], name: "index_facilities_on_condominium_id"
   end
 
