@@ -18,9 +18,7 @@ Rails.application.routes.draw do
       resources :notices, only: [:index]
       resources :employees, only: [:index, :create]
       resources :apartments, only: [:index, :create]
-      resources :facilities, only: [:index, :create] do
-      resources :reservations, only: [:create]
-    end
+      resources :facilities, only: [:index, :create]
     end
     resources :apartments, only: [:show, :update, :destroy] do
       patch :approve, on: :member
@@ -31,7 +29,9 @@ Rails.application.routes.draw do
     resources :notices, only: [:show, :update, :destroy]
     resources :users, only: [:show, :update, :create]
     resources :employees, only: [:show, :update, :destroy]
-    resources :facilities, only: [:show, :update, :destroy]
+    resources :facilities, only: [:show, :update, :destroy] do
+      resources :reservations, only: [:create]
+    end
   end
   get "up" => "rails/health#show", as: :rails_health_check
 end
