@@ -227,7 +227,7 @@ class Ability
   end
 
   def resident_reservation_rules(user, resident_condo_ids)
-    can :create, Reservation, facility: { condominium_id: resident_condo_ids }, apartment_id: user.apartment_ids
+    can :create, Reservation, facility: { condominium_id: resident_condo_ids }
     can :read, Reservation, facility: { condominium_id: resident_condo_ids }
     can :destroy, Reservation, creator_id: user.id, facility: { condominium_id: resident_condo_ids }
   end
