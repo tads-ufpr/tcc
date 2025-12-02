@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :reservation do
-    facility { nil }
-    apartment { nil }
-    creator { nil }
-    scheduled_date { "2025-12-02" }
+    association :facility
+    association :apartment
+    association :creator, factory: :user
+    scheduled_date { Date.today + 1.week }
   end
 end
