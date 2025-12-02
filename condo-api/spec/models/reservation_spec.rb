@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe Reservation, type: :model do
   describe 'associations' do
-    it { should belong_to(:facility) }
-    it { should belong_to(:apartment) }
-    it { should belong_to(:creator).class_name('User') }
+    it { is_expected.to belong_to(:facility) }
+    it { is_expected.to belong_to(:apartment) }
+    it { is_expected.to belong_to(:creator).class_name('User') }
   end
 
   describe 'validations' do
@@ -12,8 +12,8 @@ RSpec.describe Reservation, type: :model do
     let(:creator) { apartment.residents.first.user }
 
     describe 'apartment pending reservations limit' do
-      let!(:reservation1) { create(:reservation, apartment: apartment, creator: creator, scheduled_date: 1.day.from_now) }
-      let!(:reservation2) { create(:reservation, apartment: apartment, creator: creator, scheduled_date: 2.days.from_now) }
+      let!(:first_pending_reservation) { create(:reservation, apartment: apartment, creator: creator, scheduled_date: 1.day.from_now) }
+      let!(:second_pending_reservation) { create(:reservation, apartment: apartment, creator: creator, scheduled_date: 2.days.from_now) }
 
       it 'does not allow a third pending reservation for the same apartment' do
         reservation3 = build(:reservation, apartment: apartment, creator: creator, scheduled_date: 3.days.from_now)
@@ -22,7 +22,7 @@ RSpec.describe Reservation, type: :model do
       end
 
       it 'allows a third reservation if one is in the past' do
-        reservation1.update!(scheduled_date: 1.day.ago)
+        first_pending_reservation.update!(scheduled_date: 1.day.ago)
         reservation3 = build(:reservation, apartment: apartment, creator: creator, scheduled_date: 3.days.from_now)
         expect(reservation3).to be_valid
       end
