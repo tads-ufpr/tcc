@@ -18,7 +18,9 @@ Rails.application.routes.draw do
       resources :notices, only: [:index]
       resources :employees, only: [:index, :create]
       resources :apartments, only: [:index, :create]
-      resources :facilities, only: [:index, :create]
+      resources :facilities, only: [:index, :create] do
+      resources :reservations, only: [:create]
+    end
     end
     resources :apartments, only: [:show, :update, :destroy] do
       patch :approve, on: :member
