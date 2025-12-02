@@ -94,6 +94,7 @@ class Ability
 
   def admin_reservation_rules(_user, admin_condo_ids)
     can :manage, Reservation, facility: { condominium_id: admin_condo_ids }
+    can [:read, :destroy], Reservation, apartment: { condominium_id: admin_condo_ids }
   end
 
   def collaborator_permissions(user, collaborator_condo_ids)
@@ -117,6 +118,7 @@ class Ability
 
   def collaborator_reservation_rules(_user, collaborator_condo_ids)
     can :read, Reservation, facility: { condominium_id: collaborator_condo_ids }
+    can :read, Reservation, apartment: { condominium_id: collaborator_condo_ids }
   end
 
   def employee_common_permissions(user)
@@ -200,6 +202,7 @@ class Ability
     resident_resident_rules(user, resident_condo_ids)
     resident_facility_rules(user, resident_condo_ids)
     resident_reservation_rules(user, resident_condo_ids)
+    resident_apartment_reservation_rules(user)
   end
 
   def resident_apartment_read_rules(user, resident_apartment_ids)
@@ -224,6 +227,10 @@ class Ability
 
   def resident_facility_rules(_user, resident_condo_ids)
     can :read, Facility, condominium_id: resident_condo_ids
+  end
+
+  def resident_apartment_reservation_rules(user)
+    can :read, Reservation, apartment: { id: user.apartment_ids }
   end
 
   def resident_reservation_rules(user, resident_condo_ids)
