@@ -11,10 +11,10 @@ RSpec.describe "Apartments::ReservationsController", type: :request do
     before do |test|
       2.times do |i|
         create(:reservation,
-             facility: facility,
-             apartment: condo.apartments.first,
-             creator: condo.residents.first.user,
-             scheduled_date: Date.today + i.days)
+               facility: facility,
+               apartment: condo.apartments.first,
+               creator: condo.residents.first.user,
+               scheduled_date: Date.current + i.days)
       end
 
       headers = json_headers
