@@ -1,8 +1,12 @@
 > [!WARNING]
 > Não esqueça de atualizar a sua versão local (`git pull`)
 
-- [ ] Altere o valor da variável RAILS_MASTER_KEY no .env.development
-      `O valor desta variável deve ser solicitado junto a um colaborador por um canal seguro e não deve ser comprometido (compartilhado/versionado)`
+- [ ] Clonar o repositório
+- [ ] Criar um arquivo `.env.development` na raiz deste projeto contendo a `MASTER_KEY`
+```sh
+echo "RAILS_MASTER_KEY=0e85f9c43cceee33f6366d3b20638521" >> .env.development
+```
+- [ ] Inicialize o Docker na sua máquina
 
 # Running on Docker (Windows / Linux / Mac)
 
