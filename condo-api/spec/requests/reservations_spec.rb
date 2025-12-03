@@ -5,7 +5,7 @@ RSpec.describe "/reservations", type: :request do
   include_context "auth_headers"
 
   let!(:condo) { create(:condominium, :with_staff, :with_residents, residents_count: 1) }
-  let!(:facility) { create(:facility, condominium: condo) }
+  let!(:facility) { create(:facility, condominium: condo, schedulable: true) }
   let!(:resident_user) { condo.residents.first.user }
   let!(:apartment) { resident_user.apartments.first }
   let!(:another_user) { create(:user) }
@@ -82,8 +82,11 @@ RSpec.describe "/reservations", type: :request do
 
         context "when apartment has 2 concluded reservations" do
           before do
-            reservations = build_list(:reservation, 2, apartment: apartment, creator: user, scheduled_date: 1.day.ago)
-            reservations.each { |r| r.save(validate: false) }
+            2.times do |i|
+              reservation = build(:reservation, apartment:, creator: user, facility:, scheduled_date: (i+1).week.ago)
+              reservation.save(validate: false)
+            end
+
             post url, params: valid_params.to_json, headers: headers
           end
 

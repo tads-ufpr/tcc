@@ -1,6 +1,6 @@
 class ResidentsController < ApplicationController
   load_and_authorize_resource :apartment, only: [:index, :create]
-  load_and_authorize_resource :resident, through: :apartment, shallow: true, only: [:index, :create]
+  load_and_authorize_resource :resident, through: :apartment, shallow: true, only: [:index]
   load_and_authorize_resource :resident, only: [:show, :update, :destroy]
 
 
@@ -16,6 +16,16 @@ class ResidentsController < ApplicationController
 
   # POST /apartments/:apartment_id/residents
   def create
+    authorize! :create, Resident
+
+    user = User.find_by(email: resident_params[:email])
+
+    if user.blank?
+      return render_error({ email: "not registered" }, :unprocessable_content)
+    end
+
+    @resident = @apartment.residents.build(user:)
+
     if @resident.save
       render json: @resident, serializer: ResidentSerializer, status: :created
     else
@@ -42,7 +52,7 @@ class ResidentsController < ApplicationController
   def resident_params
     case action_name
     when "create"
-      params.require(:resident).permit(:user_id)
+      params.permit(:email)
     when "update"
       params.require(:resident).permit(:owner)
     end

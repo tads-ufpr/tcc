@@ -140,6 +140,34 @@ RSpec.describe "Employees", type: :request do
       it "allows the request" do
         expect(response).to have_http_status(:created)
       end
+
+      context "with user's email" do
+        let(:params) do
+          u = create(:user)
+          {
+            employee: attributes_for(:employee,
+                                     condominium_id: condominium_id,
+                                     email: u.email)
+          }.to_json
+        end
+
+        it "allows the request" do
+          expect(response).to have_http_status(:created)
+        end
+      end
+
+      context "with unregistered user's email" do
+        let(:params) do
+          {
+            employee: attributes_for(:employee,
+                                     email: "unregistered@mail.com")
+          }.to_json
+        end
+
+        it "returns unprocessable_content" do
+          expect(response).to have_http_status(:unprocessable_content)
+        end
+      end
     end
   end
 

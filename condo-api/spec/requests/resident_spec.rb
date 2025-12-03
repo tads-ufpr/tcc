@@ -5,9 +5,12 @@ RSpec.describe "/residents", type: :request do
   include_context "auth_headers"
 
   let!(:condo) { create(:condominium, :with_staff, :with_apartments) }
-  let(:ap) { condo.apartments.first }
-  let!(:resident1) { create(:resident, apartment: ap) }
-  let!(:resident2) { create(:resident, apartment: ap) }
+  let(:ap) do
+    ap = condo.apartments.first
+    create(:resident, apartment: ap)
+    create(:resident, apartment: ap)
+    ap
+  end
 
   describe "GET /residents/:id" do
     let!(:resident_to_show) { ap.residents.first }
@@ -82,4 +85,37 @@ RSpec.describe "/residents", type: :request do
       end
     end
   end
+
+  describe "POST /apartment/:apartment_id/residents" do
+    before do |test|
+      headers = json_headers
+      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
+
+      post apartment_residents_url(ap.id), params: params.to_json, headers:
+    end
+
+    describe "with unregistered user email", :auth do
+      let(:user) { ap.residents.first.user }
+      let(:params) { { email: "fakemail@fk.com" } }
+
+      it "rerturns unprocessable_content" do
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    describe "with registered user's email", :auth do
+      let(:user) { ap.residents.first.user }
+      let(:new_resident_user) { create(:user) }
+      let(:params) { { email: new_resident_user.email } }
+
+      it "succeeds" do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "insert the user as resident" do
+        expect(ap.reload.residents.reload.pluck(:user_id)).to include(new_resident_user.id)
+      end
+    end
+  end
 end
+
