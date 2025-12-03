@@ -1,5 +1,7 @@
 # Trabalho de conclusão de curso - TADS UFPR
 
+## Para subir a aplicação [acesse este link aqui](https://github.com/tads-ufpr/tcc/tree/main/condo-api) e siga as instruções 
+
 ## Equipe
 
 > Professor doutor Paulo Eduardo Sobreira Moraes
