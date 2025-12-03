@@ -10,8 +10,7 @@ services:
     volumes:
       - .:/rails
       - storage:/rails/storage
-    env_file:
-      - .env.development
-
+    environment:
+      - RAILS_MASTER_KEY=0e85f9c43cceee33f6366d3b20638521
 volumes:
   storage:
