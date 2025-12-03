@@ -27,9 +27,7 @@ RSpec.describe "Users", type: :request do
       end
 
       it "deny creating without email", missing: "email" do
-        response_json = JSON.parse(response.body)
-
-        expect(response_json["errors"]).to have_key("email")
+        expect(response.parsed_body["message"]).to include("email can't be blank;")
       end
 
       it "deny crearting without document", missing: "document" do

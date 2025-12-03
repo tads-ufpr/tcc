@@ -59,5 +59,6 @@ Facility.create({
   condominium_id: Condominium.first.id,
   name: "Piscina",
   description: "Piscina do condomínio, apenas para moradores.",
-  tax: 0
+  tax: 0,
+  schedulable: true
 })

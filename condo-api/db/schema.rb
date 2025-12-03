@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_02_181120) do
   create_table "apartments", force: :cascade do |t|
     t.integer "condominium_id", null: false
     t.integer "floor", null: false
@@ -50,10 +50,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
   create_table "facilities", force: :cascade do |t|
     t.string "name"
     t.string "description"
-    t.integer "tax"
+    t.integer "tax", default: 0, null: false
     t.integer "condominium_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "schedulable", default: false, null: false
     t.index ["condominium_id"], name: "index_facilities_on_condominium_id"
   end
 
@@ -69,6 +70,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
     t.datetime "updated_at", null: false
     t.index ["apartment_id"], name: "index_notices_on_apartment_id"
     t.index ["creator_id"], name: "index_notices_on_creator_id"
+  end
+
+  create_table "reservations", force: :cascade do |t|
+    t.integer "facility_id", null: false
+    t.integer "apartment_id", null: false
+    t.integer "creator_id", null: false
+    t.date "scheduled_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["apartment_id"], name: "index_reservations_on_apartment_id"
+    t.index ["creator_id"], name: "index_reservations_on_creator_id"
+    t.index ["facility_id", "scheduled_date"], name: "index_reservations_on_facility_id_and_scheduled_date", unique: true
+    t.index ["facility_id"], name: "index_reservations_on_facility_id"
   end
 
   create_table "residents", force: :cascade do |t|
@@ -107,6 +121,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_30_204917) do
   add_foreign_key "facilities", "condominia"
   add_foreign_key "notices", "apartments"
   add_foreign_key "notices", "users", column: "creator_id"
+  add_foreign_key "reservations", "apartments"
+  add_foreign_key "reservations", "facilities"
+  add_foreign_key "reservations", "users", column: "creator_id"
   add_foreign_key "residents", "apartments"
   add_foreign_key "residents", "users"
 end

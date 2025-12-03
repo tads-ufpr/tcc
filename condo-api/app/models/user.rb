@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :residents
   has_many :apartments, through: :residents
   has_many :condominium_as_resident, through: :apartments, source: :condominium
+  has_many :reservations, foreign_key: :creator_id, dependent: :destroy
 
   alias_attribute :cpf, :document
 

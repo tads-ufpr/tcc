@@ -24,12 +24,16 @@ Rails.application.routes.draw do
       patch :approve, on: :member
       resources :notices, only: [:index, :create]
       resources :residents, only: [:index, :create, :update, :destroy]
+      resources :reservations, only: [:index], controller: 'apartments/reservations'
     end
     resources :residents, only: [:show]
     resources :notices, only: [:show, :update, :destroy]
     resources :users, only: [:show, :update, :create]
     resources :employees, only: [:show, :update, :destroy]
-    resources :facilities, only: [:show, :update, :destroy]
+    resources :reservations, only: [:destroy]
+    resources :facilities, only: [:show, :update, :destroy] do
+      resources :reservations, only: [:create, :index]
+    end
   end
   get "up" => "rails/health#show", as: :rails_health_check
 end

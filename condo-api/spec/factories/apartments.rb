@@ -12,6 +12,7 @@ FactoryBot.define do
     end
 
     trait :with_residents do
+      status { :approved }
       transient do
         residents_count { 1 }
         owner_exists { true }

@@ -97,7 +97,7 @@ RSpec.describe '/facilities', type: :request do
         end
       end
 
-      context 'as unrelated user' do
+      context 'when unrelated user' do
         let(:user) { create(:user) }
 
         it 'returns forbidden' do
@@ -112,24 +112,21 @@ RSpec.describe '/facilities', type: :request do
       { facility: attributes_for(:facility) }
     end
 
-    before do |test|
-      headers = json_headers
-      headers = headers.merge(authenticated_headers_for(user)) if test.metadata[:auth]
-
-      post condominium_facilities_url(condo.id), params: params.to_json, headers:
-    end
-
     context 'when unauthenticated' do
       it 'returns unauthorized' do
+        post condominium_facilities_url(condo.id), params: params.to_json, headers: json_headers
         expect(response).to have_http_status(:unauthorized)
       end
     end
 
     context 'when authenticated', :auth do
+      let(:headers) { json_headers.merge(authenticated_headers_for(user)) }
+
       context 'with admin' do
         let(:user) { condo.employees.first.user }
 
         it 'creates the facility' do
+          post condominium_facilities_url(condo.id), params: params.to_json, headers: headers
           expect(response).to have_http_status(:created)
         end
       end
@@ -142,6 +139,7 @@ RSpec.describe '/facilities', type: :request do
         end
 
         it 'returns forbidden' do
+          post condominium_facilities_url(condo.id), params: params.to_json, headers: headers
           expect(response).to have_http_status(:forbidden)
         end
       end
@@ -150,6 +148,7 @@ RSpec.describe '/facilities', type: :request do
         let(:user) { condo.residents.first.user }
 
         it "deny access" do
+          post condominium_facilities_url(condo.id), params: params.to_json, headers: headers
           expect(response).to have_http_status(:forbidden)
         end
       end

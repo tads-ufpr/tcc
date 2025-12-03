@@ -28,7 +28,7 @@ class EmployeesController < ApplicationController
     if @employee.update(employee_params)
       render json: @employee
     else
-      render json: @employee.errors, status: :unprocessable_content
+      render_error(@employee.errors, :unprocessable_content)
     end
   end
 
