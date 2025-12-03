@@ -161,7 +161,7 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
   describe "POST /apartments/:apartment_id/residents" do
     let(:params) do
       u = FactoryBot.create(:user)
-      { resident: attributes_for(:resident, user_id: u.id, apartment_id: ap.id) }
+      { email: u.email }
     end
 
     before do |test|

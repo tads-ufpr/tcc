@@ -63,6 +63,7 @@ class Ability
 
   def admin_condominium_rules(user, admin_condo_ids)
     can :manage, Condominium, id: admin_condo_ids
+    can :create_employee, Condominium, id: admin_condo_ids
   end
 
   def admin_apartment_rules(user, admin_condo_ids)
