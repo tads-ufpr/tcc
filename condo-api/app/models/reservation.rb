@@ -10,6 +10,7 @@ class Reservation < ApplicationRecord
   validate :scheduled_date_is_valid, on: :create
   validate :apartment_pending_reservations_limit, on: :create
   validate :apartment_must_be_approved, on: :create
+  validate :facility_must_be_schedulable, on: :create
 
   before_destroy :prevent_destruction_of_past_reservation
 
@@ -54,5 +55,13 @@ class Reservation < ApplicationRecord
     return if apartment.blank?
 
     errors.add(:apartment, "can't have a pending status") if apartment.pending?
+  end
+
+  def facility_must_be_schedulable
+    return if facility.blank?
+
+    unless facility.schedulable?
+      errors.add(:facility, "is not schedulable")
+    end
   end
 end
