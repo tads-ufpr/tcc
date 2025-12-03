@@ -4,10 +4,12 @@ class Reservation < ApplicationRecord
   belongs_to :creator, class_name: 'User'
 
   validates :apartment, presence: true
+  validates :scheduled_date, presence: true, uniqueness: { scope: :facility_id }
   validate :creator_must_be_resident_of_apartment, on: :create
 
   validate :scheduled_date_is_valid, on: :create
   validate :apartment_pending_reservations_limit, on: :create
+  validate :apartment_must_be_approved, on: :create
 
   before_destroy :prevent_destruction_of_past_reservation
 
@@ -46,5 +48,11 @@ class Reservation < ApplicationRecord
 
     errors.add(:base, "Cannot delete a reservation in the past")
     throw :abort
+  end
+
+  def apartment_must_be_approved
+    return if apartment.blank?
+
+    errors.add(:apartment, "can't have a pending status") if apartment.pending?
   end
 end
