@@ -11,6 +11,6 @@ services:
       - .:/rails
       - storage:/rails/storage
     environment:
-      - RAILS_MASTER_KEY=0e85f9c43cceee33f6366d3b20638521
+      - RAILS_MASTER_KEY=1104f8eadc36b69f81acb5468a3a7030
 volumes:
   storage:
