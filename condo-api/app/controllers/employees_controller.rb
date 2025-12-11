@@ -2,7 +2,7 @@ class EmployeesController < ApplicationController
   load_and_authorize_resource :condominium, only: [:create, :index]
   load_and_authorize_resource :employee, only: [:show, :update, :destroy]
 
-  wrap_parameters :employee, include: [:user_id, :email, :description, :role]
+  wrap_parameters :employee, include: [:user_id, :description, :role]
 
   def index
     authorize! :read_employees, @condominium
@@ -23,7 +23,9 @@ class EmployeesController < ApplicationController
       return render_error({ user: "unregistered user" }, :unprocessable_content)
     end
 
-    @employee = @condominium.employees.build(employee_params.except(:email, :user_id).merge(user:))
+    @employee = Employee.new(employee_params)
+    @employee.user = user
+    @employee.condominium = @condominium
 
     if @employee.save
       render json: @employee, status: :created
@@ -47,12 +49,13 @@ class EmployeesController < ApplicationController
   private
 
   def find_user
-    return User.find_by(email: employee_params[:email]) if employee_params[:email]
+    user_credentials = params.require(:employee).permit(:email, :user_id)
+    return User.find_by(email: user_credentials[:email]) if user_credentials[:email].present?
 
-    User.find_by(id: employee_params[:user_id]) if employee_params[:user_id]
+    User.find_by(id: user_credentials[:user_id]) if user_credentials[:user_id].present?
   end
 
   def employee_params
-    params.require(:employee).permit(:role, :user_id, :email, :description)
+    params.require(:employee).permit(:role, :description)
   end
 end
