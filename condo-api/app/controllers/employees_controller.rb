@@ -23,7 +23,7 @@ class EmployeesController < ApplicationController
       return render_error({ user: "unregistered user" }, :unprocessable_content)
     end
 
-    @employee = Employee.new(employee_params)
+    @employee = Employee.new(employee_creation_params.slice(:role, :description))
     @employee.user = user
     @employee.condominium = @condominium
 
@@ -35,7 +35,7 @@ class EmployeesController < ApplicationController
   end
 
   def update
-    if @employee.update(employee_params)
+    if @employee.update(employee_update_params)
       render json: @employee
     else
       render_error(@employee.errors, :unprocessable_content)
@@ -49,13 +49,17 @@ class EmployeesController < ApplicationController
   private
 
   def find_user
-    user_credentials = params.require(:employee).permit(:email, :user_id)
+    user_credentials = employee_creation_params.slice(:email, :user_id)
     return User.find_by(email: user_credentials[:email]) if user_credentials[:email].present?
 
     User.find_by(id: user_credentials[:user_id]) if user_credentials[:user_id].present?
   end
 
-  def employee_params
+  def employee_creation_params
+    @employee_creation_params ||= params.require(:employee).permit(:email, :user_id, :role, :description)
+  end
+
+  def employee_update_params
     params.require(:employee).permit(:role, :description)
   end
 end
