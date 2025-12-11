@@ -19,6 +19,7 @@ gem "olive_branch"
 gem "active_model_serializers"
 
 group :development, :test do
+  gem "letter_opener"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
