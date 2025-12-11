@@ -18,11 +18,9 @@ class ResidentsController < ApplicationController
   def create
     authorize! :create, Resident
 
-    user = User.find_by(email: resident_params[:email])
+    user = find_user
 
-    if user.blank?
-      return render_error({ email: "not registered" }, :unprocessable_content)
-    end
+    return render_user_not_found unless user
 
     @resident = @apartment.residents.build(user:)
 
@@ -49,10 +47,23 @@ class ResidentsController < ApplicationController
 
   private
 
+  def find_user
+    if resident_params[:user_id]
+      User.find_by(id: resident_params[:user_id])
+    elsif resident_params[:email]
+      User.find_by(email: resident_params[:email])
+    end
+  end
+
+  def render_user_not_found
+    error_key = resident_params[:user_id] ? :user_id : :email
+    render_error({ error_key => "not found" }, :not_found)
+  end
+
   def resident_params
     case action_name
     when "create"
-      params.permit(:email)
+      params.permit(:email, :user_id)
     when "update"
       params.require(:resident).permit(:owner)
     end

@@ -159,10 +159,7 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
   end
 
   describe "POST /apartments/:apartment_id/residents" do
-    let(:params) do
-      u = FactoryBot.create(:user)
-      { email: u.email }
-    end
+    let(:new_user) { create(:user) }
 
     before do |test|
       headers = json_headers
@@ -174,6 +171,8 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
     end
 
     describe "when unauthenticated" do
+      let(:params) { { user_id: new_user.id } }
+
       it "deny access" do
         expect(response).to have_http_status(:unauthorized)
       end
@@ -184,6 +183,7 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
         condo_2 = create(:condominium, :with_staff)
         condo_2.employees.first.user
       end
+      let(:params) { { user_id: new_user.id } }
 
       it "deny access" do
         expect(response).to have_http_status(:forbidden)
@@ -196,6 +196,7 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
         create(:resident, user: resident, apartment: ap)
         resident
       end
+      let(:params) { { user_id: new_user.id } }
 
       it "deny access" do
         expect(response).to have_http_status(:forbidden)
@@ -205,8 +206,36 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
     describe "when authenticated as apartment's owner", :auth do
       let(:user) { ap.residents.first.user }
 
-      it "succeeds" do
-        expect(response).to have_http_status(:success)
+      context "with user_id" do
+        let(:params) { { user_id: new_user.id } }
+
+        it "succeeds" do
+          expect(response).to have_http_status(:created)
+        end
+      end
+
+      context "with email" do
+        let(:params) { { email: new_user.email } }
+
+        it "succeeds" do
+          expect(response).to have_http_status(:created)
+        end
+      end
+
+      context "with non-existing user_id" do
+        let(:params) { { user_id: 999 } }
+
+        it "returns not found" do
+          expect(response).to have_http_status(:not_found)
+        end
+      end
+
+      context "with non-existing email" do
+        let(:params) { { email: "invalid@email.com" } }
+
+        it "returns not found" do
+          expect(response).to have_http_status(:not_found)
+        end
       end
     end
 
@@ -216,8 +245,20 @@ RSpec.describe "/apartments/:apartment_id/residents", type: :request do
         condo.employees.first.user
       end
 
-      it "succeeds" do
-        expect(response).to have_http_status(:success)
+      context "with user_id" do
+        let(:params) { { user_id: new_user.id } }
+
+        it "succeeds" do
+          expect(response).to have_http_status(:created)
+        end
+      end
+
+      context "with email" do
+        let(:params) { { email: new_user.email } }
+
+        it "succeeds" do
+          expect(response).to have_http_status(:created)
+        end
       end
     end
   end
