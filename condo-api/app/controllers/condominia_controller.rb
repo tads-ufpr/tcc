@@ -15,7 +15,7 @@ class CondominiaController < ApplicationController
       Condominium.all
     end
 
-    render json: @condominia
+    render json: @condominia, scope: current_ability
   end
 
   # GET /condominia/1

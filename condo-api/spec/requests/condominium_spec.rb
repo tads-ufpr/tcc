@@ -46,6 +46,18 @@ RSpec.describe 'Condominia', type: :request do
         expect(response.parsed_body.count).to eq(2)
       end
     end
+
+    context 'when authenticated' do
+      before do
+        headers = json_headers.merge(authenticated_headers_for(employee))
+
+        get condominia_url, headers:
+      end
+
+      it "succeeds" do
+        expect(response).to have_http_status(:success)
+      end
+    end
   end
 
   describe 'POST /condiminia' do

@@ -1,5 +1,11 @@
 require 'spec_helper'
 
+# Load the test key before the environment is loaded
+test_key_path = File.expand_path('../config/credentials/test.key', __dir__)
+if File.exist?(test_key_path)
+  ENV['RAILS_MASTER_KEY'] = File.read(test_key_path).strip
+end
+
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 

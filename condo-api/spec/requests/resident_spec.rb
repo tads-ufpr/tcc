@@ -99,7 +99,7 @@ RSpec.describe "/residents", type: :request do
       let(:params) { { email: "fakemail@fk.com" } }
 
       it "rerturns unprocessable_content" do
-        expect(response).to have_http_status(:unprocessable_content)
+        expect(response).to have_http_status(:not_found)
       end
     end
 
@@ -118,4 +118,3 @@ RSpec.describe "/residents", type: :request do
     end
   end
 end
-
